@@ -1,0 +1,58 @@
+buildscript {
+  apply from: file('gradle/repositories.gradle')
+}
+
+plugins {
+  id 'nu.studer.plugindev' version '1.0.3'
+}
+
+apply plugin: 'idea'
+apply plugin: 'groovy'
+apply plugin: 'jacoco'
+
+apply plugin: 'com.readytalk.ci'
+
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+dependencies {
+  compile (
+    gradleApi(),
+    localGroovy(),
+    'com.netflix.nebula:gradle-info-plugin:1.9.5',
+    'org.eclipse.jgit:org.eclipse.jgit:3.5.2.201411120430-r',
+  )
+
+  //Gradle doesn't yet handle dependency resolution conflicts for localGroovy()
+  //See: http://forums.gradle.org/gradle/topics/conflicting_module_versions_with_groovy_gradle_2_0_rc_1
+  testCompile('com.netflix.nebula:nebula-test:2.0.4') {
+    exclude group:'org.codehaus.groovy'
+  }
+
+  //Allow testing of optional plugin configuration
+  testCompile (
+    'org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1',
+    'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0',
+  )
+}
+
+test {
+  maxParallelForks = 2
+}
+
+plugindev {
+  authorEmail = 'stormbeta@gmail.com'
+  authorId = 'stormbeta'
+  authorName = 'Jason Miller'
+  pluginDescription "CI Lifecycle and Conventions"
+  pluginImplementationClass 'com.readytalk.gradle.plugins.CiLifecyclePlugin'
+  pluginLicenses 'MIT'
+  pluginTags 'conventions', 'publishing', 'ci'
+  projectInceptionYear '2014'
+  projectIssuesUrl = 'https://github.com/ReadyTalk/gradle-readytalk-ci/issues'
+  projectUrl 'http://oss.readytalk.com/gradle-readytalk-ci'
+  projectVcsUrl = 'https://github.com/ReadyTalk/gradle-readytalk-ci.git'
+  done()
+}
+
+wrapper.gradleVersion = '2.2.1'

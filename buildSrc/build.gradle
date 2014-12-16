@@ -1,0 +1,30 @@
+//Allow plugin to apply itself to its own project
+apply from: file('../gradle/repositories.gradle')
+
+apply plugin: 'groovy'
+
+dependencies {
+  compile (
+    localGroovy(),
+    gradleApi(),
+    'com.netflix.nebula:gradle-info-plugin:1.9.5',
+    'org.eclipse.jgit:org.eclipse.jgit:3.5.2.201411120430-r',
+  )
+}
+
+sourceSets {
+  main {
+    groovy {
+      srcDir '../src/main/groovy'
+    }
+    resources {
+      srcDir '../src/main/resources'
+    }
+  }
+}
+
+//We already run the tests in the main project, and leaving this
+//enabled interferes with passing -Dtest.single=CLASS to gradle
+test {
+  onlyIf { false }
+}
