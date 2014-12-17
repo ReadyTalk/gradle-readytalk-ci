@@ -7,12 +7,14 @@ plugins {
   id 'jacoco'
   id 'idea'
   id 'nu.studer.plugindev' version '1.0.3'
+  id 'com.jfrog.artifactory' version '3.0.1'
   id 'nebula.info' version '2.0.0'
 }
 
 apply plugin: 'com.readytalk.ci'
 
 bintrayUpload.onlyIf { info.travisTag ==~ /v\d+\.\d+\.\d+/ }
+artifactoryPublish.onlyIf { info.branch == 'master' }
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
@@ -55,6 +57,28 @@ plugindev {
   projectUrl 'http://oss.readytalk.com/gradle-readytalk-ci'
   projectVcsUrl = 'https://github.com/ReadyTalk/gradle-readytalk-ci.git'
   done()
+}
+
+artifactory {
+  contextUrl = 'http://oss.jfrog.org/artifactory'
+  publish {
+    repository {
+      repoKey = 'oss-snapshot-local'
+      username = bintrayUser
+      password = bintrayKey
+      maven = true
+    }
+  }
+}
+
+bintray {
+  user = bintrayUser
+  key = bintrayKey
+  pkg {
+    userOrg = 'readytalk'
+    repo = 'plugins'
+    version.vcsTag = info.travisTag
+  }
 }
 
 wrapper.gradleVersion = '2.2.1'

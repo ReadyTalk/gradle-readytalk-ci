@@ -1,7 +1,7 @@
 Gradle CI Conventions Plugin
 ============================
 
-[![Build Status](http://goo.gl/RyKaY9)](http://goo.gl/RyKaY9)
+[![Build Status](http://goo.gl/RyKaY9)](http://goo.gl/Caq7yS)
 [![License](http://goo.gl/pPDj6N)](http://goo.gl/93tPwk)
 
 Initial prototype for an opinionated conventions plugin for ReadyTalk gradle projects.
