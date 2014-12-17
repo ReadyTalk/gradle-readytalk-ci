@@ -1,4 +1,7 @@
-.gradle
 build
+!src/main/groovy/org/gradle/build
+.gradle
 .idea
 *.iml
+*.ipr
+*.iws
