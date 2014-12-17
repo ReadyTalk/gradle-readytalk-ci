@@ -9,10 +9,14 @@ class LifecycleIntegTest extends IntegrationSpec {
     buildFile << '''
       apply plugin: 'com.readytalk.ci'
       apply plugin: 'java'
+
+      info.isCI = false
     '''.stripIndent()
 
     expect:
-    ExecutionResult result = runTasksSuccessfully('build')
+    ExecutionResult result = runTasksSuccessfully('ci')
+    result.wasExecuted('build')
+    !result.wasExecuted('publish')
   }
 
   //TODO: Setup fake local repos to test simple publishing

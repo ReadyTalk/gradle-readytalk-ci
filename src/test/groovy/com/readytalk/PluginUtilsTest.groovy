@@ -1,12 +1,14 @@
 package com.readytalk
 
 import com.readytalk.gradle.util.PluginUtils
+import com.readytalk.gradle.util.StringUtils
 import nebula.test.ProjectSpec
 
-class PluginUtilsTest extends ProjectSpec {
+class PluginUtilsTest extends ProjectSpec implements PluginUtils {
+
   def setupPluginCondition() {
     project.ext.pluginsApplied = false
-    PluginUtils.withPlugins(project, ['java', 'application']) {
+    withPlugins(['java', 'application']) {
       project.plugins.with {
         project.ext.pluginsApplied = (hasPlugin('java') && hasPlugin('application'))
       }
@@ -43,15 +45,15 @@ class PluginUtilsTest extends ProjectSpec {
 
   def "converts snake case to camel case"() {
     expect:
-    PluginUtils.snakeConvert('travis_pull_request').equals('travisPullRequest')
-    PluginUtils.snakeConvert('travis_pull_request', true).equals('TravisPullRequest')
-    PluginUtils.snakeConvert('travis_pull_request', true, '-').equals('Travis-Pull-Request')
+    StringUtils.snakeConvert('travis_pull_request').equals('travisPullRequest')
+    StringUtils.snakeConvert('travis_pull_request', true).equals('TravisPullRequest')
+    StringUtils.snakeConvert('travis_pull_request', true, '-').equals('Travis-Pull-Request')
   }
 
   def "converts camel case to snake case"() {
     expect:
-    PluginUtils.camelConvert('buildJobId').equals('build_job_id')
-    PluginUtils.camelConvert('buildJobId', true).equals('Build_Job_Id')
-    PluginUtils.camelConvert('buildJobId', true, '-').equals('Build-Job-Id')
+    StringUtils.camelConvert('buildJobId').equals('build_job_id')
+    StringUtils.camelConvert('buildJobId', true).equals('Build_Job_Id')
+    StringUtils.camelConvert('buildJobId', true, '-').equals('Build-Job-Id')
   }
 }

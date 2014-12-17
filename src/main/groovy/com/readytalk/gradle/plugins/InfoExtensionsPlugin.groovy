@@ -1,6 +1,7 @@
 package com.readytalk.gradle.plugins
 
 import com.readytalk.gradle.util.PluginUtils
+import com.readytalk.gradle.util.StringUtils
 import nebula.plugin.info.InfoBrokerPlugin
 import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.lib.RepositoryBuilder
@@ -8,9 +9,9 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.ivy.tasks.GenerateIvyDescriptor
 
-class InfoExtensionsPlugin implements Plugin<Project> {
+class InfoExtensionsPlugin implements Plugin<Project>, PluginUtils {
   static final String EXTENSION = 'info'
-  private Project project
+  Project project
 
   //TODO: Consider using GrGit instead of JGit
   Repository gitRepo
@@ -50,7 +51,7 @@ class InfoExtensionsPlugin implements Plugin<Project> {
         }
       }
 
-      PluginUtils.withAnyPlugin(project, ['artifactory', 'com.jfrog.artifactory']) {
+      withAnyPlugin(['artifactory', 'com.jfrog.artifactory']) {
         afterEvaluate {
           clientConfig.info.setBuildNumber(extension.buildNumber)
         }
@@ -86,14 +87,14 @@ class InfoExtensionsPlugin implements Plugin<Project> {
         isCI = true
         System.getenv().each { k, v ->
           if(k.startsWith('TRAVIS_')) {
-            def prop = PluginUtils.snakeConvert(k.toLowerCase())
+            def prop = StringUtils.snakeConvert(k.toLowerCase())
             setProperty(prop, v)
           }
         }
       }
 
       //Override
-      if(System.getenv('CI')) {
+      if(System.getenv('CI')?.toBoolean()) {
         isCI = true
       }
     }

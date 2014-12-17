@@ -3,14 +3,16 @@ buildscript {
 }
 
 plugins {
+  id 'groovy'
+  id 'jacoco'
+  id 'idea'
   id 'nu.studer.plugindev' version '1.0.3'
+  id 'nebula.info' version '2.0.0'
 }
 
-apply plugin: 'idea'
-apply plugin: 'groovy'
-apply plugin: 'jacoco'
-
 apply plugin: 'com.readytalk.ci'
+
+bintrayUpload.onlyIf { info.travisTag ==~ /v\d+\.\d+\.\d+/ }
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6

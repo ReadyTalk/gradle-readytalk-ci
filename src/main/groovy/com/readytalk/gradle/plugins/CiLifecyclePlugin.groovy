@@ -14,11 +14,13 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.tasks.testing.Test
 import org.gradle.build.BuildTypes
+import org.gradle.testing.jacoco.tasks.JacocoReport
 
-class CiLifecyclePlugin implements Plugin<Project> {
-  static final String CI_TASK_NAME = 'ci'
-  static final String PUBLISH_TASK_NAME = 'publish'
-  private Project project
+class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
+  static final String CI_TASK = 'ci'
+  static final String PUBLISH_TASK = 'publish'
+  private InfoExtension info
+  Project project
 
   void apply(final Project project) {
     this.project = project
@@ -46,18 +48,20 @@ class CiLifecyclePlugin implements Plugin<Project> {
       apply(CiPublishingPlugin)
     }
 
+    this.info = project.plugins.getPlugin(InfoExtensionsPlugin).extension
+
     //TODO: Experimental to see if it proves useful
     project.extensions.buildTypes = new BuildTypes(project)
   }
 
   void setupLifecycleTask() {
     project.with {
-      tasks.create(CI_TASK_NAME, CiTask).configure { ciTask ->
+      tasks.create(CI_TASK, CiTask).configure { ciTask ->
         //defaultTasks is a plain List, so we can't hook it with all{}
         afterEvaluate {
           dependsOn tasks.matching { it.name.equals('build') },
                   tasks.matching { it.name.equals('integTest') },
-                  defaultTasks.findAll { !it.equals(CI_TASK_NAME) }
+                  defaultTasks.findAll { !it.equals(CI_TASK) }
         }
       }
     }
@@ -67,6 +71,7 @@ class CiLifecyclePlugin implements Plugin<Project> {
   void applyConventions() {
     project.with {
       //Allow overriding before taking action
+      //TODO: Don't use afterEvaluate directly to simplify testing
       afterEvaluate {
         if (info.branch.equals('master') && info.isCI.toBoolean()) {
           enablePublishing()
@@ -82,12 +87,10 @@ class CiLifecyclePlugin implements Plugin<Project> {
         }
       }
 
-      PluginUtils.withPlugins(project, ['jacoco', 'java']) {
-        tasks.matching { it.name.equals('jacocoTestReport') }.all {
-          tasks.check.dependsOn 'jacocoTestReport'
-          tasks.jacocoTestReport {
-            reports.xml.enabled = true
-          }
+      withPlugins(['jacoco', 'java']) {
+        withTask('jacocoTestReport') { JacocoReport jacocoTask ->
+          tasks.check.dependsOn jacocoTask
+          jacocoTask.reports.xml.enabled = true
         }
       }
     }
@@ -95,7 +98,6 @@ class CiLifecyclePlugin implements Plugin<Project> {
 
   //Actually enable publishing to happen
   void enablePublishing() {
-    //TODO: Ensure build happens before any publishing subtask, not just metatask
-    project.tasks[CiLifecyclePlugin.CI_TASK_NAME].dependsOn CiLifecyclePlugin.PUBLISH_TASK_NAME
+    project.tasks[CI_TASK].dependsOn PUBLISH_TASK
   }
 }
