@@ -9,6 +9,7 @@ plugins {
   id 'nu.studer.plugindev' version '1.0.3'
   id 'com.jfrog.artifactory' version '3.0.1'
   id 'nebula.info' version '2.0.0'
+  id 'com.github.kt3k.coveralls' version '2.0.1'
 }
 
 apply plugin: 'com.readytalk.ci'
@@ -51,10 +52,10 @@ plugindev {
   pluginDescription "CI Lifecycle and Conventions"
   pluginImplementationClass 'com.readytalk.gradle.plugins.CiLifecyclePlugin'
   pluginLicenses 'MIT'
-  pluginTags 'conventions', 'publishing', 'ci'
+  pluginTags 'gradle', 'conventions', 'publishing', 'ci'
   projectInceptionYear '2014'
   projectIssuesUrl = 'https://github.com/ReadyTalk/gradle-readytalk-ci/issues'
-  projectUrl 'http://oss.readytalk.com/gradle-readytalk-ci'
+  projectUrl = 'http://oss.readytalk.com/gradle-readytalk-ci'
   projectVcsUrl = 'https://github.com/ReadyTalk/gradle-readytalk-ci.git'
   done()
 }
@@ -80,5 +81,12 @@ bintray {
     version.vcsTag = info.travisTag
   }
 }
+
+tasks.coveralls {
+  dependsOn tasks.jacocoTestReport
+  onlyIf { info.isCI }
+}
+
+tasks.ci.dependsOn tasks.coveralls
 
 wrapper.gradleVersion = '2.2.1'

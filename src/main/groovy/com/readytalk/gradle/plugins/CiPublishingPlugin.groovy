@@ -93,7 +93,6 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
         }
 
         //TODO: Combine with repo logic to only wire up anything if a local ivy repo is actually present
-        //      Also should validate that 'local' is actually a local ivy repo
         ensureInstallTask('ivy')
 
         tasks.withType(PublishToIvyRepository) { PublishToIvyRepository pubTask ->

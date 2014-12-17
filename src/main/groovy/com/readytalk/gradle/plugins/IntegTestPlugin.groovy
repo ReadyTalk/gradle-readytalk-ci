@@ -20,8 +20,6 @@ class IntegTestPlugin implements Plugin<Project> {
           integTestRuntime.extendsFrom testRuntime
         }
 
-        //TODO: Figure out why this syntax doens't work
-        //task integTest(type: Test, group: 'Verification') {
         tasks.create('integTest', Test.class) {
           group = 'verification'
           reports {

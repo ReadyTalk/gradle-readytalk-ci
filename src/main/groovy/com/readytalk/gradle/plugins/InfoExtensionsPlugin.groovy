@@ -30,6 +30,7 @@ class InfoExtensionsPlugin implements Plugin<Project>, PluginUtils {
       plugins.withId('info-broker') { InfoBrokerPlugin broker ->
         afterEvaluate {
           extension.properties.each { k, v ->
+            //TODO: Should we convert to manifest style property names when mapping into the broker?
             broker.add(k.capitalize()) { v.toString() }
           }
         }
