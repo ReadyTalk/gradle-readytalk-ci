@@ -98,6 +98,8 @@ class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
 
   //Actually enable publishing to happen
   void enablePublishing() {
-    project.tasks[CI_TASK].dependsOn PUBLISH_TASK
+    withTask(PUBLISH_TASK) { publishTask ->
+      project.tasks[CI_TASK].dependsOn publishTask
+    }
   }
 }

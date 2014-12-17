@@ -4,6 +4,7 @@ import com.readytalk.gradle.plugins.CiLifecyclePlugin
 import nebula.plugin.info.InfoPlugin
 import nebula.test.PluginProjectSpec
 import org.eclipse.jgit.lib.RepositoryBuilder
+import spock.lang.Ignore
 
 class InfoExtensionsPluginTest extends PluginProjectSpec {
   @Override
@@ -26,6 +27,8 @@ class InfoExtensionsPluginTest extends PluginProjectSpec {
     manifestMap['Pigs'].equals('flying')
   }
 
+  //TODO: Mock out a fake git repo
+  @Ignore
   def "adds branch name from git"() {
     when:
     //NOTE: Will use real project's git repo so only perform read operations
