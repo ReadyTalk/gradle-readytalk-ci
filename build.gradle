@@ -17,7 +17,11 @@ apply plugin: 'com.readytalk.ci'
 ext.isRelease = info.travisTag ==~ /v\d+\.\d+\.\d+/
 bintrayUpload.onlyIf { isRelease }
 artifactoryPublish.onlyIf { info.branch == 'master' }
-if(!isRelease) { version += '-SNAPSHOT' }
+if(isRelease) {
+  version += '-SNAPSHOT'
+} else {
+  ci.dependsOn publish
+}
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
