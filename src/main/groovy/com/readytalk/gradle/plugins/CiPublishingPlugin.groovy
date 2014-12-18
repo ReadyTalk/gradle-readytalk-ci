@@ -4,7 +4,6 @@ import com.readytalk.gradle.util.PluginUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.artifacts.UnknownRepositoryException
 import org.gradle.api.artifacts.repositories.ArtifactRepository
 import org.gradle.api.artifacts.repositories.IvyArtifactRepository
 import org.gradle.api.publish.Publication

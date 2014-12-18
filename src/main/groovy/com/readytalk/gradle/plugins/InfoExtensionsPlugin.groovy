@@ -42,11 +42,8 @@ class InfoExtensionsPlugin implements Plugin<Project>, PluginUtils {
           doFirst {
             descriptor.status = extension.buildStatus
             descriptor.branch = extension.branch
-            descriptor.withXml {
-              plugins.withId('info-broker') { InfoBrokerPlugin broker ->
-                //TODO: Probably a cleaner way to access this
-                asNode().info[0].appendNode('description', broker.buildManifestString())
-              }
+            plugins.withId('info-broker') { InfoBrokerPlugin broker ->
+              descriptor.extraInfo.add('ci','info',broker.buildManifestString())
             }
           }
         }
