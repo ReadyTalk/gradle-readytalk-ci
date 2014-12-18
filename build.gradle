@@ -18,9 +18,9 @@ ext.isRelease = info.travisTag ==~ /v\d+\.\d+\.\d+/
 bintrayUpload.onlyIf { isRelease }
 artifactoryPublish.onlyIf { info.branch == 'master' }
 if(isRelease) {
-  version += '-SNAPSHOT'
-} else {
   ci.dependsOn publish
+} else {
+  version += '-SNAPSHOT'
 }
 
 sourceCompatibility = 1.6
