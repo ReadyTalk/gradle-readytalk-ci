@@ -8,7 +8,9 @@ Gradle CI Conventions Plugin
 Initial prototype for an opinionated conventions plugin for ReadyTalk gradle projects.
 
 ##Goals
-Establish common conventions (particularly around continuous integration) for Gradle projects. Takes some inspiration from the [nebula project plugin][].
+Establish common conventions (particularly around continuous integration) for Gradle projects. Takes some inspiration from the [nebula project plugin][] from [Netflix][].
+
+[Netflix]: https://github.com/nebula-plugins
 
  * Add CI lifecycle task to provide a single entry point for CI systems
  * Abstract over different publishing mechanisms to provide a single `publish` and `install` lifecycle tasks
@@ -24,7 +26,7 @@ Establish common conventions (particularly around continuous integration) for Gr
 * `publish` is standard publish task aggregator
     * Automatically depends on artifactoryPublish or bintrayUpload if applicable
 
-* `install` will publish artifact to local filesystem if applicapble
+* `install` will publish artifact to local filesystem if applicable
     * Projects using `maven-publish` will hook Gradle's built-in task
     * Ivy projects will look for a 'local' ivy repo to publish to
 
@@ -32,10 +34,12 @@ Establish common conventions (particularly around continuous integration) for Gr
 
  * Auto-wire jacoco reporting into check phase
  * `ci` task auto-depends on `publish` if building master in a CI build
- * Artifactory plugin automatically includes publications by default
+ * [Artifactory Plugin][] automatically includes publications by default
  * Build metadata placed in ivy file description node
  * Various build metadata added to jar manifest (via nebula.info plugin)
  * Arbitrary metadata can be mapped via the info extension object
+
+[Artifactory Plugin]: https://www.jfrog.com/confluence/display/RTF/Gradle+Artifactory+Plugin
 
 ###Usage
 
