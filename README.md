@@ -5,7 +5,9 @@ Gradle CI Conventions Plugin
 [![License](http://goo.gl/pPDj6N)](http://goo.gl/93tPwk)
 [![Coverage](http://goo.gl/DyjVk5)](http://goo.gl/23kpJJ)
 
-Initial prototype for an opinionated conventions plugin for ReadyTalk gradle projects.
+[ReadyTalk][]'s set of opinionated conventions in plugin form for internal and external Gradle projects.
+
+[ReadyTalk]: http://www.readytalk.com/
 
 ##Goals
 Establish common conventions (particularly around continuous integration) for Gradle projects. Takes some inspiration from the [nebula project plugin][] from [Netflix][].
