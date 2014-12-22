@@ -39,12 +39,13 @@ Establish common conventions (particularly around continuous integration) for Gr
 
 ###Usage
 
-artifactoryPublish example:
+####artifactoryPublish example:
 
 ```
 plugins {
   id 'com.readytalk.ci' version '0.1.0'
   id 'com.jfrog.artifactory' version '3.0.1'
+}
 
 //Appending a build number
 version = version + "-${info.buildNumber}"
