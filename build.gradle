@@ -56,6 +56,7 @@ plugindev {
   authorId = 'stormbeta'
   authorName = 'Jason Miller'
   pluginDescription "CI Lifecycle and Conventions"
+  pluginId 'com.readytalk.ci'
   pluginImplementationClass 'com.readytalk.gradle.plugins.CiLifecyclePlugin'
   pluginLicenses 'MIT'
   pluginTags 'gradle', 'conventions', 'publishing', 'ci'

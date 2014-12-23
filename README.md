@@ -87,3 +87,5 @@ publishing {
         * e.g. can't extend nebula CI plugin as-is
 * Better integration tests for different types of projects
 * Example projects
+* Default publications (optional)
+* 

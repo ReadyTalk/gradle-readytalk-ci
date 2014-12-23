@@ -36,6 +36,8 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
         publishTask.dependsOn buildTask
       }
     }
+
+    //TODO: Optional default publications for java/web components
   }
 
   void configurePublishing() {
