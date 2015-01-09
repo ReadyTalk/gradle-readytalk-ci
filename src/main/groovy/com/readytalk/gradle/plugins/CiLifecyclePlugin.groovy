@@ -19,7 +19,7 @@ import org.gradle.testing.jacoco.tasks.JacocoReport
 class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
   static final String CI_TASK = 'ci'
   static final String PUBLISH_TASK = 'publish'
-  private InfoExtension info
+  private InfoExtension infoExt
   Project project
 
   void apply(final Project project) {
@@ -48,7 +48,7 @@ class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
       apply(CiPublishingPlugin)
     }
 
-    this.info = project.plugins.getPlugin(InfoExtensionsPlugin).extension
+    this.infoExt = project.plugins.getPlugin(InfoExtensionsPlugin).extension
 
     //TODO: Experimental to see if it proves useful
     project.extensions.buildTypes = new BuildTypes(project)
@@ -60,8 +60,8 @@ class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
         //defaultTasks is a plain List, so we can't hook it with all{}
         afterEvaluate {
           dependsOn tasks.matching { it.name.equals('build') },
-                  tasks.matching { it.name.equals('integTest') },
-                  defaultTasks.findAll { !it.equals(CI_TASK) }
+                    tasks.matching { it.name.equals('integTest') },
+                    defaultTasks.findAll { !it.equals(CI_TASK) }
         }
       }
     }
@@ -70,10 +70,15 @@ class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
   //TODO: Include more conventions and split into separate plugin class
   void applyConventions() {
     project.with {
-      //Allow overriding before taking action
-      //TODO: Don't use afterEvaluate directly to simplify testing
+      //TODO: Move to a proper release conventions plugin instead of ad hoc
       afterEvaluate {
-        if (info.branch.equals('master') && info.isCI.toBoolean()) {
+        def shouldPublish = infoExt.branch == 'master' && infoExt.isCI.toBoolean()
+
+        if (infoExt.ciProvider == 'travis') {
+          shouldPublish = shouldPublish && infoExt.travisPullRequest == 'false'
+        }
+
+        if (shouldPublish.toBoolean()) {
           enablePublishing()
         }
       }

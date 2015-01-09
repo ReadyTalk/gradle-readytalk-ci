@@ -22,11 +22,12 @@ Establish common conventions (particularly around continuous integration) for Gr
 [nebula project plugin]: https://github.com/nebula-plugins/nebula-project-plugin
 
 ##Tasks
-* `ci` task is the standard entry point for CI systems
+* `ci` lifecycle task is the standard entry point for CI systems
     * Default to running the build command plus integTest, and default tasks
 
-* `publish` is standard publish task aggregator
+* `publish` lifecycle is standard publish task aggregator
     * Automatically depends on artifactoryPublish or bintrayUpload if applicable
+    * Supports the ivy-publish / maven-publish plugins
 
 * `install` will publish artifact to local filesystem if applicable
     * Projects using `maven-publish` will hook Gradle's built-in task
@@ -34,12 +35,16 @@ Establish common conventions (particularly around continuous integration) for Gr
 
 ##Conventions
 
+ * Adds integTest task for integration tests
  * Auto-wire jacoco reporting into check phase
  * `ci` task auto-depends on `publish` if building master in a CI build
+     * Supports Travis CI and Jenkins
  * [Artifactory Plugin][] automatically includes publications by default
- * Build metadata placed in ivy file description node
- * Various build metadata added to jar manifest (via nebula.info plugin)
- * Arbitrary metadata can be mapped via the info extension object
+ * Build metadata placed in ivy description section
+     * Also in jar manifests via the nebula.info plugin
+ * Build metadata mapped from `buildEnv` extension object
+     * Pre-populated with various default values from the environment
+     * Can map arbitrary values (expando object)
 
 [Artifactory Plugin]: https://www.jfrog.com/confluence/display/RTF/Gradle+Artifactory+Plugin
 
@@ -49,21 +54,22 @@ Establish common conventions (particularly around continuous integration) for Gr
 
 ```
 plugins {
-  id 'com.readytalk.ci' version '0.1.0'
+  id 'com.readytalk.ci' version '0.2.0'
   id 'com.jfrog.artifactory' version '3.0.1'
 }
 
 //Appending a build number
-version = version + "-${info.buildNumber}"
+version = version + "-${buildEnv.buildNumber}"
 
-info {
+//Add custom metadata
+buildEnv {
   //This would add a "BuildUser" field to the jar manifest
   buildUser = System.getProperty("user.name")
 }
 
 //This would disable artifactoryPublish unless on a release branch
 artifactoryPublish.onlyIf {
-  info.branch.startsWith 'release_'
+  buildEnv.branch.startsWith 'release_'
 }
 
 publishing {
@@ -82,10 +88,10 @@ publishing {
 ### Future work
 
 * Move more conventions into plugin
+* Include release/versioning conventions
 * Better extensibility - allow third parties to extend base functionality
     * May want to open pull requests with nebula plugins
         * e.g. can't extend nebula CI plugin as-is
 * Better integration tests for different types of projects
 * Example projects
-* Default publications (optional)
-* 
+* Optional default publications

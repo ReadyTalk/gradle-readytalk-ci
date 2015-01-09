@@ -14,9 +14,8 @@ plugins {
 
 apply plugin: 'com.readytalk.ci'
 
-ext.isRelease = info.travisTag ==~ /v\d+\.\d+\.\d+/
+ext.isRelease = buildEnv.travisTag ==~ /v\d+\.\d+\.\d+/
 bintrayUpload.onlyIf { isRelease }
-artifactoryPublish.onlyIf { info.branch == 'master' && info.travisPullRequest == 'false' }
 if(isRelease) {
   ci.dependsOn publish
 } else {
@@ -85,13 +84,13 @@ bintray {
   pkg {
     userOrg = 'readytalk'
     repo = 'plugins'
-    version.vcsTag = info.travisTag
+    version.vcsTag = buildEnv.travisTag
   }
 }
 
 tasks.coveralls {
   dependsOn tasks.jacocoTestReport
-  onlyIf { info.isCI }
+  onlyIf { buildEnv.isCI }
 }
 
 tasks.ci.dependsOn tasks.coveralls

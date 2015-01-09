@@ -33,19 +33,35 @@ class CiLifecyclePluginTest extends PluginProjectSpec implements TestUtils {
     project.plugins.hasPlugin('com.readytalk.integTest')
   }
 
-  def "master branch on ci server enables publishing"() {
+  def "does enable publishing on master branch ci build"() {
     when:
     project.with {
       apply plugin: 'com.readytalk.ci'
       apply plugin: 'ivy-publish'
-      info.branch = 'master'
-      info.isCI = true
+      buildEnv.branch = 'master'
+      buildEnv.isCI = 'true'
     }
     project.evaluate()
 
     then:
     project.tasks.getByName(CiLifecyclePlugin.PUBLISH_TASK)
     hasTaskDependency(CiLifecyclePlugin.CI_TASK, CiLifecyclePlugin.PUBLISH_TASK)
+  }
+
+  def "doesn't enable publishing on travis pull request"() {
+    when:
+    project.with {
+      apply plugin: 'com.readytalk.ci'
+      apply plugin: 'ivy-publish'
+      buildEnv.branch = 'master'
+      buildEnv.isCI = 'true'
+      buildEnv.ciProvider = 'travis'
+      buildEnv.travisPullRequest = '45'
+    }
+    project.evaluate()
+
+    then:
+    !hasTaskDependency(CiLifecyclePlugin.CI_TASK, CiLifecyclePlugin.PUBLISH_TASK)
   }
 
   def "publish task name matches gradle-defined version"() {

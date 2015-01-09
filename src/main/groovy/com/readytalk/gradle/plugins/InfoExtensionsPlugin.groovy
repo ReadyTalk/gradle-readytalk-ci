@@ -10,7 +10,7 @@ import org.gradle.api.Project
 import org.gradle.api.publish.ivy.tasks.GenerateIvyDescriptor
 
 class InfoExtensionsPlugin implements Plugin<Project>, PluginUtils {
-  static final String EXTENSION = 'info'
+  static final String EXTENSION = 'buildEnv'
   Project project
 
   //TODO: Consider using GrGit instead of JGit
@@ -26,12 +26,11 @@ class InfoExtensionsPlugin implements Plugin<Project>, PluginUtils {
       setDefaults()
       populateCIInfo()
 
-      //Map all info fields into broker plugin if present
+      //Map all info fields into broker plugin
       plugins.withId('info-broker') { InfoBrokerPlugin broker ->
         afterEvaluate {
           extension.properties.each { k, v ->
-            //TODO: Should we convert to manifest style property names when mapping into the broker?
-            broker.add(k.capitalize()) { v.toString() }
+            broker.add(StringUtils.camelConvert(k,true,'-')) { v.toString() }
           }
         }
       }

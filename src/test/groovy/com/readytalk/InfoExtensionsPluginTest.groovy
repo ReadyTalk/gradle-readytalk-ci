@@ -17,7 +17,7 @@ class InfoExtensionsPluginTest extends PluginProjectSpec {
     project.with {
       apply plugin: pluginName
       apply plugin: InfoPlugin
-      info.pigs = "flying"
+      buildEnv.pigs = "flying"
       evaluate()
     }
     def manifestMap = project.plugins.getPlugin('info-broker').buildManifest()
