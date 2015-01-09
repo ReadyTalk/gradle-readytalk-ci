@@ -16,7 +16,7 @@ apply plugin: 'com.readytalk.ci'
 
 ext.isRelease = buildEnv.travisTag ==~ /v\d+\.\d+\.\d+/
 bintrayUpload.onlyIf { isRelease }
-artifactoryUpload.onlyIf { !isRelease }
+artifactoryPublish.onlyIf { !isRelease }
 if(isRelease) {
   ci.dependsOn publish
 } else {
