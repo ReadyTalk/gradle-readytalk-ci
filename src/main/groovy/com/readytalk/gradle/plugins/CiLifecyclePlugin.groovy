@@ -72,7 +72,13 @@ class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
     project.with {
       //TODO: Move to a proper release conventions plugin instead of ad hoc
       afterEvaluate {
-        def shouldPublish = infoExt.branch == 'master' && infoExt.isCI.toBoolean()
+        //TODO: allow using something other than master
+        def gitRepo = plugins.getPlugin(InfoExtensionsPlugin).gitRepo
+        def shouldPublish = infoExt.isCI.toBoolean() &&
+          (
+            infoExt.branch.endsWith('master')
+            || gitRepo.getRef('refs/heads/master').objectId.name == gitRepo.resolve('HEAD').name
+          )
 
         if (infoExt.ciProvider == 'travis') {
           shouldPublish = shouldPublish && infoExt.travisPullRequest == 'false'
@@ -83,6 +89,7 @@ class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
         }
       }
 
+      //Apply to all Test tasks in all projects
       tasks.withType(Test) { Test testTask ->
         testTask.testLogging {
           exceptionFormat = 'full'

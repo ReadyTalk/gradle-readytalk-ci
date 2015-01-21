@@ -100,7 +100,7 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
           //Assume ivy local repo is called 'local'
           if(pubTask.name.endsWith('PublicationToLocalRepository')) {
             pubTask.onlyIf {
-              project.gradle.startParameter.taskNames.contains('install')
+              project.gradle.startParameter.taskNames.any { it.endsWith 'install'}
             }
             tasks.install.dependsOn pubTask
           }
