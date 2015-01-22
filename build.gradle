@@ -14,15 +14,6 @@ plugins {
 
 apply plugin: 'com.readytalk.ci'
 
-ext.isRelease = buildEnv.travisTag ==~ /v\d+\.\d+\.\d+/
-bintrayUpload.onlyIf { isRelease }
-artifactoryPublish.onlyIf { !isRelease }
-if(isRelease) {
-  ci.dependsOn publish
-} else {
-  version += '-SNAPSHOT'
-}
-
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
@@ -66,34 +57,5 @@ plugindev {
   projectVcsUrl = 'https://github.com/ReadyTalk/gradle-readytalk-ci.git'
   done()
 }
-
-artifactory {
-  contextUrl = 'http://oss.jfrog.org/artifactory'
-  publish {
-    repository {
-      repoKey = 'oss-snapshot-local'
-      username = bintrayUser
-      password = bintrayKey
-      maven = true
-    }
-  }
-}
-
-bintray {
-  user = bintrayUser
-  key = bintrayKey
-  pkg {
-    userOrg = 'readytalk'
-    repo = 'plugins'
-    version.vcsTag = buildEnv.travisTag
-  }
-}
-
-tasks.coveralls {
-  dependsOn tasks.jacocoTestReport
-  onlyIf { buildEnv.isCI }
-}
-
-tasks.ci.dependsOn tasks.coveralls
 
 wrapper.gradleVersion = '2.2.1'
