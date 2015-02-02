@@ -77,7 +77,7 @@ class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
         def shouldPublish = infoExt.isCI.toBoolean() &&
           (
             infoExt.branch.endsWith('master')
-            || gitRepo.getRef('refs/heads/master').objectId.name == gitRepo.resolve('HEAD').name
+            || gitRepo.getRef('refs/heads/master')?.objectId?.name == gitRepo.resolve('HEAD')?.name
           )
 
         if (infoExt.ciProvider == 'travis') {

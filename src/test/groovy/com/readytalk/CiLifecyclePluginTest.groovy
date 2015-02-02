@@ -2,12 +2,19 @@ package com.readytalk
 
 import nebula.test.PluginProjectSpec
 import com.readytalk.gradle.plugins.CiLifecyclePlugin
+import org.eclipse.jgit.lib.Repository
 import org.gradle.api.publish.plugins.PublishingPlugin
 
 class CiLifecyclePluginTest extends PluginProjectSpec implements TestUtils {
+  Repository repo
+
   @Override
   String getPluginName() {
     return 'com.readytalk.ci'
+  }
+
+  def setup() {
+    repo = createMockGitRepo()
   }
 
   def "base ci task dependencies wired lazily"() {
@@ -38,7 +45,6 @@ class CiLifecyclePluginTest extends PluginProjectSpec implements TestUtils {
     project.with {
       apply plugin: 'com.readytalk.ci'
       apply plugin: 'ivy-publish'
-      buildEnv.branch = 'master'
       buildEnv.isCI = 'true'
     }
     project.evaluate()
