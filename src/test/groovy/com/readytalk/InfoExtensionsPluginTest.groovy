@@ -34,9 +34,11 @@ class InfoExtensionsPluginTest extends PluginProjectSpec implements TestUtils {
     manifestMap['Pigs'].equals('flying')
   }
 
+  //TODO: environment variables from plugin build leak into test cases
   def "adds branch name from git"() {
     when:
     project.apply plugin: CiLifecyclePlugin
+    project.buildEnv.branch = 'master'
     project.evaluate()
     def manifestMap = project.plugins.getPlugin('info-broker').buildManifest()
 
