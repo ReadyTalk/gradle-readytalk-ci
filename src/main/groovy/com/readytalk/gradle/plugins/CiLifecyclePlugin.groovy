@@ -81,7 +81,7 @@ class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
           )
 
         if (infoExt.ciProvider == 'travis') {
-          shouldPublish = shouldPublish && infoExt.travisPullRequest == 'false'
+          shouldPublish = shouldPublish && (infoExt.travisPullRequest == 'false')
         }
 
         if (shouldPublish.toBoolean()) {
@@ -99,10 +99,66 @@ class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
         }
       }
 
+      withPluginId('com.github.kt3k.coveralls') {
+        tasks.ci.dependsOn tasks.coveralls
+        tasks.coveralls { cover ->
+          onlyIf { infoExt.isCI.toBoolean() }
+        }
+      }
+
+      //Open source plugin project conventions
+      withPlugins(['nu.studer.plugindev', 'com.jfrog.artifactory', 'com.jfrog.bintray']) {
+        ext.isRelease = buildEnv.travisTag ==~ /v\d+\.\d+\.\d+/
+        tasks.bintrayUpload.onlyIf { isRelease }
+        tasks.artifactoryPublish.onlyIf { !isRelease }
+        if(ext.isRelease) {
+          withTask(PUBLISH_TASK) { publishTask ->
+            tasks.ci.dependsOn publishTask
+          }
+        } else {
+          version += '-SNAPSHOT'
+        }
+
+        if(!hasProperty("bintrayUser") || !hasProperty("bintrayKey")) {
+          def bintrayUser = ext.bintrayUser ?: ''
+          def bintrayKey = ext.bintrayKey ?: ''
+        }
+
+        if(!hasProperty('bintrayOrg')) {
+          def bintrayOrg = ext.bintrayOrg ?: ''
+        }
+
+        artifactory {
+          contextUrl = 'http://oss.jfrog.org/artifactory'
+          publish {
+            repository {
+              repoKey = 'oss-snapshot-local'
+              username = bintrayUser
+              password = bintrayKey
+              maven = true
+            }
+          }
+        }
+
+        //TODO: We're assuming travis, but it doesn't have to be travis
+        bintray {
+          user = bintrayUser
+          key = bintrayKey
+          pkg {
+            userOrg = bintrayOrg
+            repo = 'plugins'
+            version.vcsTag = buildEnv.travisTag
+          }
+        }
+      }
+
       withPlugins(['jacoco', 'java']) {
         withTask('jacocoTestReport') { JacocoReport jacocoTask ->
           tasks.check.dependsOn jacocoTask
           jacocoTask.reports.xml.enabled = true
+          withPluginId('com.github.kt3k.coveralls') {
+            tasks.coveralls.dependsOn jacocoTask
+          }
         }
       }
     }

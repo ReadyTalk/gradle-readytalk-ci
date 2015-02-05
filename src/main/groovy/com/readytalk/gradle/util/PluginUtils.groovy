@@ -15,13 +15,13 @@ trait PluginUtils {
   void withPlugins(List<String> ids, Closure config) {
     if(ids.empty || ids == null) return
 
-    def pluginId = ids[0]
+    def pluginId = ids.first()
 
     if(ids.size() == 1) {
       withPluginId(pluginId, config)
     }
 
-    withPlugins(ids.drop(1)) { plugin ->
+    withPlugins(ids.minus(pluginId)) { plugin ->
       withPluginId(pluginId, config)
     }
   }
