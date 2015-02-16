@@ -63,6 +63,6 @@ trait PluginUtils {
    * @param action Configuration closure
    */
   void withTask(String taskName, Closure action) {
-    project.tasks.matching { it.name == taskName }.all(action)
+    project.tasks.matching { it.name.equals(taskName) }.all(action)
   }
 }

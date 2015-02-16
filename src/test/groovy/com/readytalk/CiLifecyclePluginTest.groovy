@@ -22,6 +22,8 @@ class CiLifecyclePluginTest extends PluginProjectSpec implements TestUtils {
     project.apply plugin: 'java'
     project.defaultTasks(':clean')
     project.apply plugin: pluginName
+    //Gradle 2.3 won't create build task until explicitly referenced
+    project.tasks.build
     project.evaluate()
 
     then:

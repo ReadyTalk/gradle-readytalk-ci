@@ -76,7 +76,9 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
       plugins.withId('maven-publish') {
         ensureInstallTask('maven')
         tasks.withType(PublishToMavenLocal) { PublishToMavenLocal pubTask ->
-          tasks.install.dependsOn pubTask
+          withTask('install') {
+            tasks.install.dependsOn pubTask
+          }
         }
       }
 
@@ -118,8 +120,8 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
       description = "Install project into the local ${style} repository"
       group = "publishing"
     }
-    withTask('build') { Task buildTask ->
-      project.tasks.install.dependsOn buildTask
+    withTask('install') {
+      project.tasks.install.dependsOn project.tasks.build
     }
   }
 }
