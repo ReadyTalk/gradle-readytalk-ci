@@ -59,8 +59,10 @@ class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
       tasks.create(CI_TASK, CiTask).configure { ciTask ->
         //defaultTasks is a plain List, so we can't hook it with all{}
         afterEvaluate {
-          dependsOn tasks.matching { it.name.equals('build') },
-                    tasks.matching { it.name.equals('integTest') },
+          if(tasks.findByName('build') != null) {
+            dependsOn tasks.build
+          }
+          dependsOn tasks.matching { it.name.equals('integTest') },
                     defaultTasks.findAll { !it.equals(CI_TASK) }
         }
       }
