@@ -13,7 +13,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.tasks.testing.Test
-import org.gradle.build.BuildTypes
 import org.gradle.testing.jacoco.tasks.JacocoReport
 
 class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
@@ -49,9 +48,6 @@ class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
     }
 
     this.infoExt = project.plugins.getPlugin(InfoExtensionsPlugin).extension
-
-    //TODO: Experimental to see if it proves useful
-    project.extensions.buildTypes = new BuildTypes(project)
   }
 
   void setupLifecycleTask() {
