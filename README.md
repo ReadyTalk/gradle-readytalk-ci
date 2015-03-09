@@ -84,6 +84,7 @@ publishing {
 ###Notes
 
  * Uses an early version of the `nebula.info` plugin by default to maintain Java 6 compatibility. You can manually add the newer 2.0.0 version to your project if using Java 7 or later.
+ * Requires Gradle 2.1 or later
 
 ### Future work
 
