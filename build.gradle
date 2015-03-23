@@ -32,7 +32,7 @@ dependencies {
     gradleApi(),
     localGroovy(),
     'com.netflix.nebula:gradle-info-plugin:1.9.5',
-    'org.eclipse.jgit:org.eclipse.jgit:3.6.2.201501210735-r',
+    'org.eclipse.jgit:org.eclipse.jgit:3.7.0.201502260915-r',
   )
 
   //Gradle doesn't yet handle dependency resolution conflicts for localGroovy()

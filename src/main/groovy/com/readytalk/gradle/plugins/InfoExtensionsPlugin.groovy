@@ -10,7 +10,7 @@ import org.gradle.api.Project
 import org.gradle.api.publish.ivy.tasks.GenerateIvyDescriptor
 
 class InfoExtensionsPlugin implements Plugin<Project>, PluginUtils {
-  static final String EXTENSION = 'buildEnv'
+  static final String EXTENSION_NAME = 'buildEnv'
   Project project
 
   //TODO: Consider using GrGit instead of JGit
@@ -22,14 +22,19 @@ class InfoExtensionsPlugin implements Plugin<Project>, PluginUtils {
     gitRepo = new RepositoryBuilder().findGitDir(project.rootDir).build()
 
     project.with {
-      this.extension = project.extensions.create(InfoExtensionsPlugin.EXTENSION, InfoExtension)
+      this.extension = new InfoExtension()
+      project.extensions.add(InfoExtensionsPlugin.EXTENSION_NAME, this.extension)
       setDefaults()
       populateCIInfo()
 
       //Map all info fields into broker plugin
       plugins.withId('info-broker') { InfoBrokerPlugin broker ->
         afterEvaluate {
-          extension.properties.each { k, v ->
+          (InfoExtension.getDeclaredFields().findAll {
+            !it.synthetic && it.name != 'props'
+          }.collectEntries { k ->
+            [ (k.name):extension[k.name] ]
+          } + extension.props).each { k, v ->
             broker.add(StringUtils.camelConvert(k,true,'-')) { v.toString() }
           }
         }
@@ -57,7 +62,7 @@ class InfoExtensionsPlugin implements Plugin<Project>, PluginUtils {
   }
 
   void setDefaults() {
-    extension.branch = gitRepo.branch
+    extension.branch = gitRepo.branch ?: ''
     extension.buildStatus = 'integration'
     extension.ciProvider = 'none'
     extension.buildNumber = 'local'
