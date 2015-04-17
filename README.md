@@ -54,8 +54,8 @@ Establish common conventions (particularly around continuous integration) for Gr
 
 ```
 plugins {
-  id 'com.readytalk.ci' version '0.2.0'
-  id 'com.jfrog.artifactory' version '3.0.1'
+  id 'com.readytalk.ci' version '0.3.0'
+  id 'com.jfrog.artifactory' version '3.0.3'
 }
 
 //Appending a build number
@@ -63,8 +63,8 @@ version = version + "-${buildEnv.buildNumber}"
 
 //Add custom metadata
 buildEnv {
-  //This would add a "BuildUser" field to the jar manifest
-  buildUser = System.getProperty("user.name")
+  //This would add a "Custom-Field" field to the jar manifest
+  customField = System.getProperty("my.custom.property.name")
 }
 
 //This would disable artifactoryPublish unless on a release branch
@@ -72,6 +72,15 @@ artifactoryPublish.onlyIf {
   buildEnv.branch.startsWith 'release_'
 }
 
+publishing {
+  publications {
+    maven(MavenPublication) {
+      from components.java
+    }
+  }
+}
+
+//Alternatively, if you use ivy metadata:
 publishing {
   publications {
     ivy(IvyPublication) {
