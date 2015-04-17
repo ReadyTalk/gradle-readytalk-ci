@@ -96,3 +96,7 @@ publishing {
 * Better integration tests for different types of projects
 * Example projects
 * Optional default publications
+* Optionally disable nebula jar manifest modification
+  - This can cause issues with Gradle's up-to-date checks on jars
+
+### Gradle 2.4 support

@@ -12,6 +12,8 @@ import org.gradle.api.publish.ivy.tasks.PublishToIvyRepository
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom
 import org.gradle.api.publish.maven.tasks.PublishToMavenLocal
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
+import org.gradle.api.publish.ivy.IvyPublication
+import org.gradle.util.GradleVersion
 
 class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
   Project project
@@ -97,13 +99,25 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
         //TODO: Combine with repo logic to only wire up anything if a local ivy repo is actually present
         ensureInstallTask('ivy')
 
-        tasks.withType(PublishToIvyRepository) { PublishToIvyRepository pubTask ->
-          //Assume ivy local repo is called 'local'
-          if(pubTask.name.endsWith('PublicationToLocalRepository')) {
-            pubTask.onlyIf {
-              project.gradle.startParameter.taskNames.any { it.endsWith 'install'}
+        publishing {
+          publications.withType(IvyPublication) { IvyPublication pub ->
+            String pubTaskName = "publish${pub.name.capitalize()}PublicationToLocalRepository"
+            boolean doInstall = project.gradle.startParameter.taskNames.any { it == 'install' || it.endsWith(':install') }
+            if(GradleVersion.current() > GradleVersion.version('2.3')) {
+              model {
+                tasks.install {
+                  dependsOn pubTaskName
+                }
+                tasks."${pubTaskName}" {
+                  onlyIf { doInstall }
+                }
+              }
+            } else {
+              tasks.withType(PublishToIvyRepository) { PublishToIvyRepository pubTask ->
+                pubTask.onlyIf { doInstall }
+                tasks.install.dependsOn pubTask
+              }
             }
-            tasks.install.dependsOn pubTask
           }
         }
       }
