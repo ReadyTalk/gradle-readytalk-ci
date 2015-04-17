@@ -29,13 +29,17 @@ class InfoExtensionsPlugin implements Plugin<Project>, PluginUtils {
 
       //Map all info fields into broker plugin
       plugins.withId('info-broker') { InfoBrokerPlugin broker ->
+        //Override nebula Build-Number, ours is more thorough
         afterEvaluate {
+          def buildNumber = broker.container.find { it.name == 'Build-Number' }
+          if(buildNumber) broker.container.remove(buildNumber)
           (InfoExtension.getDeclaredFields().findAll {
             !it.synthetic && it.name != 'props'
           }.collectEntries { k ->
             [ (k.name):extension[k.name] ]
           } + extension.props).each { k, v ->
-            broker.add(StringUtils.camelConvert(k,true,'-')) { v.toString() }
+            String key = StringUtils.camelConvert(k,true,'-')
+            broker.add(key) { v.toString() }
           }
         }
       }
@@ -65,8 +69,8 @@ class InfoExtensionsPlugin implements Plugin<Project>, PluginUtils {
     extension.branch = gitRepo.branch ?: ''
     extension.buildStatus = 'integration'
     extension.ciProvider = 'none'
-    extension.buildNumber = 'local'
     extension.isCI = false
+    extension.buildNumber = project.plugins.findPlugin('info-ci')?.extension?.buildNumber ?: 'local'
   }
 
   void populateCIInfo() {

@@ -7,6 +7,7 @@ import org.gradle.api.publish.ivy.IvyPublication
 import org.gradle.api.publish.ivy.plugins.IvyPublishPlugin
 import org.gradle.api.publish.ivy.tasks.PublishToIvyRepository
 import org.gradle.api.publish.plugins.PublishingPlugin
+import spock.lang.Ignore
 
 class CiPublishingTest extends ProjectSpec implements TestUtils {
   def setupIvyRepo() {
@@ -59,6 +60,7 @@ class CiPublishingTest extends ProjectSpec implements TestUtils {
     project.publishing.repositories.getByName('local') instanceof IvyArtifactRepository
   }
 
+  @Ignore('must be rewritten as integration test for Gradle 2.4+')
   def "ivy publish tasks wired up for install"() {
     def taskName = 'publishFakePublicationToLocalRepository'
 
