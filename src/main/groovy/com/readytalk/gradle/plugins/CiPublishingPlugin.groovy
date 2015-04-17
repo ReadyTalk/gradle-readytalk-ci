@@ -11,6 +11,7 @@ import org.gradle.api.publish.ivy.tasks.GenerateIvyDescriptor
 import org.gradle.api.publish.ivy.tasks.PublishToIvyRepository
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom
 import org.gradle.api.publish.maven.tasks.PublishToMavenLocal
+import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 
 class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
   Project project
@@ -75,10 +76,8 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
       //Map local maven publishing to install task
       plugins.withId('maven-publish') {
         ensureInstallTask('maven')
-        tasks.withType(PublishToMavenLocal) { PublishToMavenLocal pubTask ->
-          withTask('install') {
-            tasks.install.dependsOn pubTask
-          }
+        withTask('install') {
+          tasks.install.dependsOn(MavenPublishPlugin.PUBLISH_LOCAL_LIFECYCLE_TASK_NAME)
         }
       }
 
