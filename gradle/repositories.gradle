@@ -5,6 +5,12 @@
  }
 
  repositories {
+   mavenLocal()
+
+   maven {
+     url "https://plugins.gradle.org/m2/"
+   }
+
    maven {
      name 'JFrog OSS snapshot repo'
      url 'https://oss.jfrog.org/oss-snapshot-local'

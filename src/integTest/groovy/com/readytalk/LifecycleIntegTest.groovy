@@ -10,7 +10,7 @@ class LifecycleIntegTest extends IntegrationSpec {
       apply plugin: 'com.readytalk.ci'
       apply plugin: 'java'
 
-      buildEnv.isCI = false
+      buildEnv.ci = false
     '''.stripIndent()
 
     expect:

@@ -1,4 +1,4 @@
-package com.readytalk.gradle.plugins
+package com.readytalk.gradle.plugins.integtest
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -37,7 +37,7 @@ class IntegTestPlugin implements Plugin<Project> {
           }
 
           doFirst {
-            if(files(sourceSets.integTest.getAllSource()).isEmpty()) {
+            if (files(sourceSets.integTest.getAllSource()).isEmpty()) {
               logger.info("${name} does not contain any integration tests")
             }
           }

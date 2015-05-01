@@ -7,22 +7,14 @@ plugins {
   id 'jacoco'
   id 'idea'
   id 'maven-publish'
-  id 'nu.studer.plugindev' version '1.0.3'
+  id 'com.gradle.plugin-publish' version '0.9.0'
   id 'com.jfrog.artifactory' version '3.0.1'
   id 'nebula.info' version '2.2.0'
   id 'com.github.kt3k.coveralls' version '2.0.1'
 }
 
 apply plugin: 'com.readytalk.ci'
-
-ext.isRelease = buildEnv.travisTag ==~ /v\d+\.\d+\.\d+/
-bintrayUpload.onlyIf { isRelease }
-artifactoryPublish.onlyIf { !isRelease }
-if(isRelease) {
-  ci.dependsOn publish
-} else {
-  version += '-SNAPSHOT'
-}
+apply plugin: 'com.readytalk.ci.version.snapshot'
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
@@ -37,35 +29,34 @@ dependencies {
 
   //Gradle doesn't yet handle dependency resolution conflicts for localGroovy()
   //See: http://forums.gradle.org/gradle/topics/conflicting_module_versions_with_groovy_gradle_2_0_rc_1
-  testCompile('com.netflix.nebula:nebula-test:2.2.0') {
+  testCompile('com.netflix.nebula:nebula-test:2.2.1') {
     exclude group:'org.codehaus.groovy'
   }
 
   //Allow testing of optional plugin configuration
   testCompile (
     'org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1',
-    'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0',
+    'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2',
+    'com.gradle.publish:plugin-publish-plugin:0.9.0',
   )
 }
 
-test {
-  maxParallelForks = 2
+tasks.withType(Test) {
+  maxParallelForks = Runtime.runtime.availableProcessors()
 }
 
-plugindev {
-  authorEmail = 'stormbeta@gmail.com'
-  authorId = 'stormbeta'
-  authorName = 'Jason Miller'
-  pluginDescription "CI Lifecycle and Conventions"
-  pluginId 'com.readytalk.ci'
-  pluginImplementationClass 'com.readytalk.gradle.plugins.CiLifecyclePlugin'
-  pluginLicenses 'MIT'
-  pluginTags 'gradle', 'conventions', 'publishing', 'ci'
-  projectInceptionYear '2014'
-  projectIssuesUrl = 'https://github.com/ReadyTalk/gradle-readytalk-ci/issues'
-  projectUrl = 'http://oss.readytalk.com/gradle-readytalk-ci'
-  projectVcsUrl = 'https://github.com/ReadyTalk/gradle-readytalk-ci.git'
-  done()
+pluginBundle {
+  website = 'http://oss.readytalk.com/gradle-readytalk-ci'
+  vcsUrl = 'https://github.com/ReadyTalk/gradle-readytalk-ci.git'
+  description = "CI Lifecycle and Conventions"
+  tags = [ 'gradle', 'conventions', 'publishing', 'ci' ]
+
+  plugins {
+    ciPlugin {
+      id = 'com.readytalk.ci'
+      displayName = 'ReadyTalk CI Plugin'
+    }
+  }
 }
 
 artifactory {
@@ -80,21 +71,19 @@ artifactory {
   }
 }
 
-bintray {
-  user = bintrayUser
-  key = bintrayKey
-  pkg {
-    userOrg = 'readytalk'
-    repo = 'plugins'
-    version.vcsTag = buildEnv.travisTag
-  }
+tasks.coveralls {
+  dependsOn 'jacocoTestReport'
+  onlyIf { buildEnv.ci }
 }
 
-tasks.coveralls {
-  dependsOn tasks.jacocoTestReport
-  onlyIf { buildEnv.isCI }
+jacocoTestReport {
+  dependsOn 'integTest'
+  reports {
+    xml.enabled true
+    html.destination "${buildDir}/jacocoHtml"
+  }
 }
 
 tasks.ci.dependsOn tasks.coveralls
 
-wrapper.gradleVersion = '2.3'
+wrapper.gradleVersion = '2.4'

@@ -1,4 +1,4 @@
-package com.readytalk.gradle.tasks
+package com.readytalk.gradle.plugins.ci.tasks
 
 import org.gradle.api.DefaultTask
 

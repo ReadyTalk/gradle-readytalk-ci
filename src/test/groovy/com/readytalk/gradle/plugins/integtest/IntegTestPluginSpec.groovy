@@ -1,8 +1,8 @@
-package com.readytalk
+package com.readytalk.gradle.plugins.integtest
 
 import nebula.test.PluginProjectSpec
 
-class IntegTestPluginTest extends PluginProjectSpec {
+class IntegTestPluginSpec extends PluginProjectSpec {
   @Override
   String getPluginName() {
     return 'com.readytalk.integTest'
@@ -22,19 +22,23 @@ class IntegTestPluginTest extends PluginProjectSpec {
   }
 
   def "can apply with idea plugin enabled"() {
-    when: project.with {
+    given:
+    project.with {
       apply plugin: 'java'
       apply plugin: 'idea'
       apply plugin: pluginName
-      evaluate()
     }
+
+    when:
+    project.evaluate()
 
     then:
     project.idea.module.scopes.TEST.plus.contains(project.configurations.integTestCompile)
   }
 
   def "can apply with eclipse plugin enabled"() {
-    when: project.with {
+    when:
+    project.with {
       apply plugin: 'java'
       apply plugin: 'eclipse'
       apply plugin: pluginName

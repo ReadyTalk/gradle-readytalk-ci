@@ -1,4 +1,4 @@
-package com.readytalk
+package com.readytalk.gradle
 
 import groovy.transform.CompileStatic
 import org.eclipse.jgit.api.Git
