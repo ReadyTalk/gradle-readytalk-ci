@@ -1,4 +1,5 @@
 build
+buildSrc/src
 !src/main/groovy/org/gradle/build
 .gradle
 .idea
