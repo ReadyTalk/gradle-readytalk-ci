@@ -13,6 +13,7 @@ import org.gradle.api.publish.ivy.tasks.GenerateIvyDescriptor
 import org.gradle.api.publish.ivy.tasks.PublishToIvyRepository
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom
+import org.gradle.api.publish.plugins.PublishingPlugin
 import org.gradle.util.GradleVersion
 
 class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
@@ -31,11 +32,11 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
       project.tasks.maybeCreate('publish').configure {
         group = 'publishing'
       }
-      project.tasks[CiLifecyclePlugin.CI_TASK].dependsOn project.tasks.publish
+      project.tasks[CiLifecyclePlugin.CI_LIFECYCLE_TASK_NAME].dependsOn project.tasks.publish
       project.tasks.publish.dependsOn project.tasks.artifactoryPublish
     }
 
-    withTask(CiLifecyclePlugin.PUBLISH_TASK) { Task publishTask ->
+    withTask(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME) { Task publishTask ->
       withTask('build') { Task buildTask ->
         publishTask.dependsOn buildTask
       }
@@ -56,7 +57,7 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
   private void configurePluginPublishing() {
     project.with {
       plugins.withId('com.gradle.plugin-publish') {
-        tasks.getByName(CiLifecyclePlugin.PUBLISH_TASK).dependsOn tasks.getByName('publishPlugins')
+        tasks.getByName(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME).dependsOn tasks.getByName('publishPlugins')
         tasks['publishPlugins'].mustRunAfter 'build'
       }
       /*TODO: Add maven publications:
@@ -139,7 +140,7 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
     project.with {
       withPluginId('com.jfrog.artifactory') {
         //Ensure publishing goes through artifactoryPublish when using artifactory plugin
-        tasks[CiLifecyclePlugin.PUBLISH_TASK].dependsOn tasks['artifactoryPublish']
+        tasks[PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME].dependsOn tasks['artifactoryPublish']
         tasks['artifactoryPublish'].mustRunAfter 'build'
 
         //Oddly, artifactory plugin doesn't always wire these itself
@@ -167,7 +168,7 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
       withPluginId('com.jfrog.bintray') {
         //TODO: Expand bintray support
         logger.info('Bintray support limited to publish wiring only')
-        tasks.getByName(CiLifecyclePlugin.PUBLISH_TASK).dependsOn tasks.getByName('bintrayUpload')
+        tasks.getByName(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME).dependsOn tasks.getByName('bintrayUpload')
         tasks['bintrayUpload'].mustRunAfter 'build'
       }
     }

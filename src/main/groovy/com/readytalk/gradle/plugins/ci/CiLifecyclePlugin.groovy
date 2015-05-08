@@ -4,12 +4,12 @@ import com.readytalk.gradle.plugins.ci.tasks.CiTask
 import com.readytalk.gradle.util.PluginUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.publish.plugins.PublishingPlugin
 import org.gradle.api.tasks.testing.Test
 import org.gradle.testing.jacoco.tasks.JacocoReport
 
 class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
-  static final String CI_TASK = 'ci'
-  static final String PUBLISH_TASK = 'publish'
+  static final String CI_LIFECYCLE_TASK_NAME = 'ci'
   private CiInfoExtension infoExt
   Project project
 
@@ -26,14 +26,14 @@ class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
 
   private void setupLifecycleTask() {
     project.with {
-      tasks.create(CI_TASK, CiTask).configure { ciTask ->
+      tasks.create(CI_LIFECYCLE_TASK_NAME, CiTask).configure { ciTask ->
         //defaultTasks is a plain List, so we can't hook it with all{}
         afterEvaluate {
           if (tasks.findByName('build') != null) {
             dependsOn tasks.build
           }
           dependsOn tasks.matching { it.name.equals('integTest') },
-              defaultTasks.findAll { !it.equals(CI_TASK) }
+              defaultTasks.findAll { !it.equals(CI_LIFECYCLE_TASK_NAME) }
         }
       }
     }
@@ -48,11 +48,11 @@ class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
   }
 
   private void enablePublishing() {
-    withTask(PUBLISH_TASK) { publishTask ->
+    withTask(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME) { publishTask ->
       project.with {
         afterEvaluate {
           if (infoExt.isCi() && (infoExt.isMasterBranch() || infoExt.isRelease() || infoExt.isReleaseBranch())) {
-            tasks[CI_TASK].dependsOn publishTask
+            tasks[CI_LIFECYCLE_TASK_NAME].dependsOn publishTask
           }
         }
       }

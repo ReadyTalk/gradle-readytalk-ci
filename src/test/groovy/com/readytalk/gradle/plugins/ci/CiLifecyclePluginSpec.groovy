@@ -34,8 +34,8 @@ class CiLifecyclePluginSpec extends PluginProjectSpec implements TestUtils {
     project.evaluate()
 
     then:
-    project.tasks.getByName(CiLifecyclePlugin.PUBLISH_TASK)
-    hasTaskDependency(CiLifecyclePlugin.CI_TASK, CiLifecyclePlugin.PUBLISH_TASK) == publishEnabled
+    project.tasks.getByName(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME)
+    hasTaskDependency(CiLifecyclePlugin.CI_LIFECYCLE_TASK_NAME, PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME) == publishEnabled
 
     where:
     isRelease | isReleaseBranch | isMasterBranch | isCi  || publishEnabled
@@ -47,11 +47,6 @@ class CiLifecyclePluginSpec extends PluginProjectSpec implements TestUtils {
     false     | true            | false          | false || false
     false     | false           | true           | false || false
     false     | false           | false          | false || false
-  }
-
-  def "publish task name matches gradle-defined version"() {
-    expect:
-    CiLifecyclePlugin.PUBLISH_TASK.equals(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME)
   }
 
   def "can apply with jacoco plugin"() {

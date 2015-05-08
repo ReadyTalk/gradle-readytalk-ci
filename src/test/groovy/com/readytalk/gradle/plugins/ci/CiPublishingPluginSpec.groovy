@@ -47,7 +47,7 @@ class CiPublishingPluginSpec extends ProjectSpec implements TestUtils {
     project.plugins.apply(publishPlugin)
 
     then:
-    hasTaskDependency(CiLifecyclePlugin.PUBLISH_TASK, publishTaskName)
+    hasTaskDependency(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME, publishTaskName)
 
     where:
     publishPlugin               | publishTaskName

@@ -3,8 +3,6 @@ package com.readytalk.gradle.plugins.ci
 import com.readytalk.gradle.TestUtils
 import nebula.test.PluginProjectSpec
 import org.eclipse.jgit.lib.Repository
-import org.gradle.api.publish.plugins.PublishingPlugin
-import spock.lang.Unroll
 
 class CiPluginSpec extends PluginProjectSpec implements TestUtils {
   Repository repo
@@ -28,8 +26,8 @@ class CiPluginSpec extends PluginProjectSpec implements TestUtils {
     project.evaluate()
 
     then:
-    hasTaskDependency(CiLifecyclePlugin.CI_TASK, 'build')
-    hasTaskDependency(CiLifecyclePlugin.CI_TASK, 'integTest')
-    hasTaskDependency(CiLifecyclePlugin.CI_TASK, 'clean')
+    hasTaskDependency(CiLifecyclePlugin.CI_LIFECYCLE_TASK_NAME, 'build')
+    hasTaskDependency(CiLifecyclePlugin.CI_LIFECYCLE_TASK_NAME, 'integTest')
+    hasTaskDependency(CiLifecyclePlugin.CI_LIFECYCLE_TASK_NAME, 'clean')
   }
 }
