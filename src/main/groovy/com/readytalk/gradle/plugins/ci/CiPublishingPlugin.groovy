@@ -17,11 +17,16 @@ import org.gradle.api.publish.plugins.PublishingPlugin
 import org.gradle.util.GradleVersion
 
 class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
+  private CiInfoExtension infoExt
   Project project
 
   void apply(final Project project) {
     this.project = project
-    project.plugins.apply(BasePlugin)
+    project.plugins.with {
+      apply(BasePlugin)
+      def infoPlugin = apply(CiInfoPlugin)
+      this.infoExt = infoPlugin.extension
+    }
 
     withAnyPlugin(['ivy-publish', 'maven-publish', 'com.gradle.plugin-publish']) {
       configurePublishing()
@@ -58,7 +63,9 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
     project.with {
       plugins.withId('com.gradle.plugin-publish') {
         tasks.getByName(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME).dependsOn tasks.getByName('publishPlugins')
-        tasks['publishPlugins'].mustRunAfter 'build'
+        tasks.'publishPlugins'.mustRunAfter 'build'
+        // Only publish plugin releases.
+        tasks.'publishPlugins'.onlyIf { infoExt.isRelease() }
       }
       /*TODO: Add maven publications:
         publications {
@@ -169,7 +176,9 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
         //TODO: Expand bintray support
         logger.info('Bintray support limited to publish wiring only')
         tasks.getByName(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME).dependsOn tasks.getByName('bintrayUpload')
-        tasks['bintrayUpload'].mustRunAfter 'build'
+        tasks.'bintrayUpload'.mustRunAfter 'build'
+        // Bintray only handles releases.
+        tasks.'bintrayUpload'.onlyIf { infoExt.isRelease() }
       }
     }
   }
