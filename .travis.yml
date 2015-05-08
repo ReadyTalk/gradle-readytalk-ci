@@ -5,5 +5,7 @@ env:
   global:
   - secure: bRDLHywt6ujV18EyL5F7MaV0p/o9f1YZh2aH63bmlRgssp3zFrnOyokyt5gmPmj5AxuUV3h1D6AN6j9cd3goRfI0jwh6gG+dTP6CN2lWvpsG46Gh9hkC906gb1fvRm/wSYqS3b5lBPgPWLkQLLHIc9t8tX9e74trm3EzB2ePiuE=
   - secure: k3DZO7vZfar+AL52nG2pXPMlLsHNfcrMMKAmBVpiyOGIN775q90F+j8NVZkv21RpJou+AxhrfkgVmb7jp4DrXjWKzmXOVjcj2YyvV9YyFFtYW44udNoAzbpaOigSC6ub52EAVVWIyval+BVxpOWR2xKDGpcLQ6eIvelXDNhAQcI=
+  - secure: Ymo6btWBv5nHJUfUSISofiX6I9EnTRg/wv9Qaf0NGT3gAkoXkbK21/BzsXorUhW3g/rnfV5Lmm5zaPcM/USGX26eFirXM62rqWEqJJL4uQUWiabqUhGX8noBcFV/G5HHIByx5SHQz2gVgrrbDww/itr6MSKCs0lZAa+7+dmkWRE=
+  - secure: ka6df2qkWGnLjr8X3eLpLUrnBvxfqM7idYi37qqfwNcNyv/HGXgvYqiBYUIgcB03uhXbbF5IkL1Y8RZ3PGcG0eHZ0gAqaUXbY9JHfmkTfMhBp5V+6Ya72lL7A7X3DlEblKIp4TnGcwkbIBfjWSpf/A4lOEJp8XMoTwbAliE2HAU=
 install: /bin/true
 script: ./gradlew ci
