@@ -59,6 +59,22 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
         tasks.getByName(CiLifecyclePlugin.PUBLISH_TASK).dependsOn tasks.getByName('publishPlugins')
         tasks['publishPlugins'].mustRunAfter 'build'
       }
+      /*TODO: Add maven publications:
+        publications {
+          maven(MavenPublication) {
+            from components.java
+            artifact publishPluginJar {
+              classifier 'sources'
+            }
+            artifact publishPluginGroovyDocsJar {
+              classifier 'groovydoc'
+            }
+            artifact publishPluginJavaDocsJar {
+              classifier 'javadoc'
+            }
+          }
+        }
+      */
     }
   }
 

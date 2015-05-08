@@ -16,10 +16,10 @@ class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
   void apply(final Project project) {
     this.project = project
     project.plugins.with {
-      apply(CiInfoPlugin)
+      def infoPlugin = apply(CiInfoPlugin)
+      this.infoExt = infoPlugin.extension
       apply(CiPublishingPlugin)
     }
-    this.infoExt = project.plugins.getPlugin(CiInfoPlugin).extension
     setupLifecycleTask()
     applyConventions()
   }
@@ -62,12 +62,15 @@ class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
   private void configureTestTasks() {
     project.with {
       tasks.withType(Test) { Test testTask ->
+        // Better Test logging
         testTask.testLogging {
           exceptionFormat = 'full'
           if (project.hasProperty('stdOut')) {
             showStandardStreams = true
           }
         }
+        // Run tests in parallel
+        testTask.maxParallelForks = Runtime.runtime.availableProcessors()
       }
     }
   }

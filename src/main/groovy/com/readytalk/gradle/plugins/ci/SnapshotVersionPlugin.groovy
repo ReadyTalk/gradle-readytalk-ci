@@ -11,8 +11,8 @@ class SnapshotVersionPlugin implements Plugin<Project>, PluginUtils {
   void apply(final Project project) {
     this.project = project
     project.with {
-      plugins.apply(CiInfoPlugin)
-      this.infoExt = project.plugins.getPlugin(CiInfoPlugin).extension
+      def infoPlugin = plugins.apply(CiInfoPlugin)
+      this.infoExt = infoPlugin.extension
 
       afterEvaluate {
         if (!infoExt.isRelease()) {

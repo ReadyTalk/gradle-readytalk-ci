@@ -25,6 +25,72 @@ Gradle projects. Takes some inspiration from the [nebula project plugin][] from
 
 [nebula project plugin]: https://github.com/nebula-plugins/nebula-project-plugin
 
+## Usage
+See the [ReadyTalk CI Plugin][] page on the [Gradle Plugin Portal][] for more
+information on the latest published verison of the plugin and alternative methods
+to apply the plugin for older Gradle versions.
+
+[ReadyTalk CI Plugin]: https://plugins.gradle.org/plugin/com.readytalk.ci
+[Gradle Plugin Portal]: https://plugins.gradle.org/
+
+The functionality the CI plugin provides depends on the other plugins you apply
+to the project. The CI plugin will detect the other plugins and configure them
+appropriately.
+
+The most basic application of the CI plugin will get you the basic lifecycle
+tasks and also apply the 'base' Gradle plugin:
+
+```groovy
+plugins {
+  id 'com.readytalk.ci' version '0.4.0'
+}
+```
+
+For a basic `java` project published to an Artifactory repository Maven-style
+(with a `pom.xml`) and SNAPSHOT versioning you will want something like this
+(recommended for libraries and Gradle plugins):
+
+```groovy
+plugins {
+  id 'java'
+  id 'com.readytalk.ci' version '0.4.0'
+  id 'com.jfrog.artifactory' version '3.0.3'
+}
+
+apply plugin: 'com.readytalk.ci.version.snapshot'
+
+publishing {
+  publications {
+    maven(MavenPublication) {
+      from components.java
+    }
+  }
+}
+```
+
+For a basic java project plublished to Artifactory Ivy-style (with an
+`ivy.xml`) and buildnumber versioning, something like the following will be
+more your speed (recommended for services and applications delivered as part of
+a continuous delivery pipeline):
+
+```groovy
+plugins {
+  id 'java'
+  id 'com.readytalk.ci' version '0.4.0'
+  id 'com.jfrog.artifactory' version '3.0.3'
+}
+
+apply plugin: 'com.readytalk.ci.version.buildnumber'
+
+publishing {
+  publications {
+    ivy(IvyPublication) {
+      from components.java
+    }
+  }
+}
+```
+
 ## Tasks
 The ReadyTalk CI Plugin provides a few top-level "lifecycle" Gradle tasks.
 
@@ -88,40 +154,6 @@ and add:
 
 ```groovy
 apply plugin: 'com.readytalk.ci.version.buildnumber'
-```
-
-### Usage
-
-#### artifactoryPublish example:
-
-```groovy
-plugins {
-  id 'com.readytalk.ci' version '0.3.0'
-  id 'com.jfrog.artifactory' version '3.0.3'
-}
-
-//Add custom metadata
-buildEnv {
-  //This would add a "Custom-Field" field to the jar manifest
-  customField = System.getProperty("my.custom.property.name")
-}
-
-publishing {
-  publications {
-    maven(MavenPublication) {
-      from components.java
-    }
-  }
-}
-
-//Alternatively, if you use ivy metadata:
-publishing {
-  publications {
-    ivy(IvyPublication) {
-      from components.java
-    }
-  }
-}
 ```
 
 ### Notes

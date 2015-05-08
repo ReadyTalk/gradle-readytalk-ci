@@ -11,11 +11,11 @@ class BuildNumberVersionPlugin implements Plugin<Project>, PluginUtils {
   void apply(final Project project) {
     this.project = project
     project.with {
-      plugins.apply(CiInfoPlugin)
-      this.infoExt = project.plugins.getPlugin(CiInfoPlugin).extension
+      def infoPlugin = plugins.apply(CiInfoPlugin)
+      this.infoExt = infoPlugin.extension
 
       afterEvaluate {
-        if (infoExt.ci) {
+        if (infoExt.isCi()) {
           project.version += "-${infoExt.buildNumber}"
         } else {
           project.version += "-DEV"

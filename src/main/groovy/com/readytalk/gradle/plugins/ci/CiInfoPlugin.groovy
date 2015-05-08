@@ -64,7 +64,10 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
   }
 
   private boolean refResolvesToMaster() {
-    gitRepo.getRef('refs/heads/master')?.objectId?.name == gitRepo.resolve('HEAD')?.name
+    def masterRef = gitRepo.getRef('refs/heads/master')?.objectId?.name
+    def headRef = gitRepo.resolve('HEAD')?.name
+
+    return (masterRef && headRef) && (masterRef == headRef)
   }
 
   private boolean isMaster(String branch) {

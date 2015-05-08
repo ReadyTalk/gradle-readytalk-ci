@@ -1,6 +1,7 @@
 package com.readytalk.gradle.plugins.integtest
 
 import nebula.test.PluginProjectSpec
+import spock.lang.Unroll
 
 class IntegTestPluginSpec extends PluginProjectSpec {
   @Override
@@ -47,4 +48,20 @@ class IntegTestPluginSpec extends PluginProjectSpec {
     then:
     project.eclipse.classpath.plusConfigurations.contains(project.configurations.integTestCompile)
   }
+
+  @Unroll
+  def "auto-applies integTest plugin when #langPlugin plugin is applied"() {
+    when:
+    project.with {
+      apply plugin: pluginName
+      apply plugin: langPlugin
+    }
+
+    then:
+    project.plugins.hasPlugin('com.readytalk.integTest')
+
+    where:
+    langPlugin << ['scala', 'java', 'groovy']
+  }
+
 }
