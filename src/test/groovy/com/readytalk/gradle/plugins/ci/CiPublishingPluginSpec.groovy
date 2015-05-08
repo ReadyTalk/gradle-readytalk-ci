@@ -1,6 +1,6 @@
-package com.readytalk
+package com.readytalk.gradle.plugins.ci
 
-import com.readytalk.gradle.plugins.CiLifecyclePlugin
+import com.readytalk.gradle.TestUtils
 import nebula.test.ProjectSpec
 import org.gradle.api.artifacts.repositories.IvyArtifactRepository
 import org.gradle.api.publish.ivy.IvyPublication
@@ -8,8 +8,9 @@ import org.gradle.api.publish.ivy.plugins.IvyPublishPlugin
 import org.gradle.api.publish.ivy.tasks.PublishToIvyRepository
 import org.gradle.api.publish.plugins.PublishingPlugin
 import spock.lang.Ignore
+import spock.lang.Unroll
 
-class CiPublishingTest extends ProjectSpec implements TestUtils {
+class CiPublishingPluginSpec extends ProjectSpec implements TestUtils {
   def setupIvyRepo() {
     project.with {
       plugins.apply(CiLifecyclePlugin)
@@ -24,7 +25,8 @@ class CiPublishingTest extends ProjectSpec implements TestUtils {
     }
   }
 
-  def "creates local install task when publish plugins applied"() {
+  @Unroll
+  def "creates local install task when #publishPlugin plugin applied"() {
     when:
     project.plugins.apply(CiLifecyclePlugin)
     project.plugins.apply(publishPlugin)
@@ -37,19 +39,21 @@ class CiPublishingTest extends ProjectSpec implements TestUtils {
     publishPlugin << ['ivy-publish', 'maven-publish']
   }
 
-  def "wires up to third party publish tasks"() {
+  @Unroll
+  def "wires up #publishTaskName from #publishPlugin to publish task"() {
     when:
     project.plugins.apply(CiLifecyclePlugin)
     project.plugins.apply('ivy-publish')
     project.plugins.apply(publishPlugin)
 
     then:
-    hasTaskDependency(CiLifecyclePlugin.PUBLISH_TASK, publishTaskName)
+    hasTaskDependency(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME, publishTaskName)
 
     where:
-    publishPlugin           | publishTaskName
-    'com.jfrog.bintray'     | 'bintrayUpload'
-    'com.jfrog.artifactory' | 'artifactoryPublish'
+    publishPlugin               | publishTaskName
+    'com.jfrog.bintray'         | 'bintrayUpload'
+    'com.jfrog.artifactory'     | 'artifactoryPublish'
+    'com.gradle.plugin-publish' | 'publishPlugins'
   }
 
   def "uses local ivy repo for install task"() {
@@ -64,7 +68,7 @@ class CiPublishingTest extends ProjectSpec implements TestUtils {
   def "ivy publish tasks wired up for install"() {
     def taskName = 'publishFakePublicationToLocalRepository'
 
-    when:
+    given:
     setupIvyRepo()
     project.plugins.apply('java')
     project.publishing {
@@ -74,6 +78,8 @@ class CiPublishingTest extends ProjectSpec implements TestUtils {
         }
       }
     }
+
+    when:
     project.evaluate()
 
     then:

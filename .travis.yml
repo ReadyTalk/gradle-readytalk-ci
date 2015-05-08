@@ -1,8 +1,9 @@
 language: groovy
 jdk: oraclejdk7
-script: ./gradlew ci
 sudo: false
 env:
   global:
   - secure: bRDLHywt6ujV18EyL5F7MaV0p/o9f1YZh2aH63bmlRgssp3zFrnOyokyt5gmPmj5AxuUV3h1D6AN6j9cd3goRfI0jwh6gG+dTP6CN2lWvpsG46Gh9hkC906gb1fvRm/wSYqS3b5lBPgPWLkQLLHIc9t8tX9e74trm3EzB2ePiuE=
   - secure: k3DZO7vZfar+AL52nG2pXPMlLsHNfcrMMKAmBVpiyOGIN775q90F+j8NVZkv21RpJou+AxhrfkgVmb7jp4DrXjWKzmXOVjcj2YyvV9YyFFtYW44udNoAzbpaOigSC6ub52EAVVWIyval+BVxpOWR2xKDGpcLQ6eIvelXDNhAQcI=
+install: /bin/true
+script: ./gradlew ci

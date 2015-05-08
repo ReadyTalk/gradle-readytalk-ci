@@ -1,7 +1,5 @@
-package com.readytalk
+package com.readytalk.gradle.util
 
-import com.readytalk.gradle.util.PluginUtils
-import com.readytalk.gradle.util.StringUtils
 import nebula.test.ProjectSpec
 
 class PluginUtilsTest extends ProjectSpec implements PluginUtils {

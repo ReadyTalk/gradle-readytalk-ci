@@ -12,16 +12,12 @@ dependencies {
   )
 }
 
-sourceSets {
-  main {
-    groovy {
-      srcDir '../src/main/groovy'
-    }
-    resources {
-      srcDir '../src/main/resources'
-    }
-  }
+task copySource(type: Sync) {
+  from '../src/main'
+  into 'src/main'
 }
+
+compileGroovy.dependsOn copySource
 
 //We already run the tests in the main project, and leaving this
 //enabled interferes with passing -Dtest.single=CLASS to gradle

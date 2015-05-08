@@ -13,11 +13,11 @@ trait PluginUtils {
    * @param config Configuration closure
    */
   void withPlugins(List<String> ids, Closure config) {
-    if(ids.empty || ids == null) return
+    if (ids.empty || ids == null) return
 
     def pluginId = ids[0]
 
-    if(ids.size() == 1) {
+    if (ids.size() == 1) {
       withPluginId(pluginId, config)
     }
 
@@ -49,7 +49,7 @@ trait PluginUtils {
     try {
       project.plugins.withId(id, config)
     } catch (UnknownPluginException e) {
-      if(!e.message.contains(id)) {
+      if (!e.message.contains(id)) {
         throw e
       }
     }
