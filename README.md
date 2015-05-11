@@ -42,7 +42,7 @@ tasks and also apply the 'base' Gradle plugin:
 
 ```groovy
 plugins {
-  id 'com.readytalk.ci' version '0.4.0'
+  id 'com.readytalk.ci' version '0.4.1'
 }
 ```
 
@@ -53,7 +53,7 @@ For a basic `java` project published to an Artifactory repository Maven-style
 ```groovy
 plugins {
   id 'java'
-  id 'com.readytalk.ci' version '0.4.0'
+  id 'com.readytalk.ci' version '0.4.1'
   id 'com.jfrog.artifactory' version '3.0.3'
 }
 
@@ -76,7 +76,7 @@ a continuous delivery pipeline):
 ```groovy
 plugins {
   id 'java'
-  id 'com.readytalk.ci' version '0.4.0'
+  id 'com.readytalk.ci' version '0.4.1'
   id 'com.jfrog.artifactory' version '3.0.3'
 }
 
