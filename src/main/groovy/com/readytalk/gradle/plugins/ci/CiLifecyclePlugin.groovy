@@ -69,8 +69,6 @@ class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
             showStandardStreams = true
           }
         }
-        // Run tests in parallel
-        testTask.maxParallelForks = Runtime.runtime.availableProcessors()
       }
     }
   }

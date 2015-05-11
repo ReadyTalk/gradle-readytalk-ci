@@ -25,7 +25,7 @@ dependencies {
     gradleApi(),
     localGroovy(),
     'com.netflix.nebula:gradle-info-plugin:1.9.5',
-    'org.eclipse.jgit:org.eclipse.jgit:3.7.0.201502260915-r',
+    'org.eclipse.jgit:org.eclipse.jgit:3.7.1.201504261725-r',
   )
 
   //Gradle doesn't yet handle dependency resolution conflicts for localGroovy()
@@ -96,6 +96,11 @@ jacocoTestReport {
     xml.enabled true
     html.destination "${buildDir}/jacocoHtml"
   }
+}
+
+tasks.withType(Test) { testTask ->
+  // Run tests in parallel
+  testTask.maxParallelForks = Runtime.runtime.availableProcessors()
 }
 
 tasks.ci.dependsOn tasks.coveralls

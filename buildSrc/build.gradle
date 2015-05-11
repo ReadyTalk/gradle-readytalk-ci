@@ -8,7 +8,7 @@ dependencies {
     localGroovy(),
     gradleApi(),
     'com.netflix.nebula:gradle-info-plugin:1.9.5',
-    'org.eclipse.jgit:org.eclipse.jgit:3.5.2.201411120430-r',
+    'org.eclipse.jgit:org.eclipse.jgit:3.7.1.201504261725-r',
   )
 }
 
