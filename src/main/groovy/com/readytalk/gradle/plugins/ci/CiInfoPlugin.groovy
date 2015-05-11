@@ -133,15 +133,18 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
       plugins.withId('info-broker') { InfoBrokerPlugin broker ->
         //Override nebula Build-Number, ours is more thorough
         afterEvaluate {
-          def buildNumber = broker.container.find { it.name == 'Build-Number' }
-          if (buildNumber) broker.container.remove(buildNumber)
-          (CiInfoExtension.getDeclaredFields().findAll {
+          def ciProps = (CiInfoExtension.getDeclaredFields().findAll {
             !it.synthetic && it.name != 'props'
           }.collectEntries { k ->
             [(k.name): extension[k.name]]
-          } + extension.props).each { k, v ->
-            String key = StringUtils.camelConvert(k, true, '-')
-            broker.add(key) { v.toString() }
+          } + extension.props).collectEntries { k, v ->
+            [(StringUtils.camelConvert(k, true, '-')): v]
+          }
+          //Override nebula.info values with ones from this plugin's extension if values exist in both
+          def conflicts = broker.container.findAll { ciProps.containsKey(it.name) }
+          broker.container.removeAll(conflicts)
+          ciProps.each { key, value ->
+            broker.add(key) { value.toString() }
           }
         }
       }
