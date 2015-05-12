@@ -28,40 +28,52 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
       this.infoExt = infoPlugin.extension
     }
 
-    withAnyPlugin(['ivy-publish', 'maven-publish', 'com.gradle.plugin-publish']) {
-      configurePublishing()
-    }
-
-    //Support for older publishing style
-    withPluginId('artifactory') {
-      project.tasks.maybeCreate('publish').configure {
-        group = 'publishing'
-      }
-      project.tasks[CiLifecyclePlugin.CI_LIFECYCLE_TASK_NAME].dependsOn project.tasks.publish
-      project.tasks.publish.dependsOn project.tasks.artifactoryPublish
-    }
-
-    withTask(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME) { Task publishTask ->
-      withTask('build') { Task buildTask ->
-        publishTask.dependsOn buildTask
-      }
-    }
+    configurePublishing()
+    configureLegacyArtifactoryPublish()
+    configurePublishTask()
 
     //TODO: Optional default publications for java/web components
   }
 
+  private configureLegacyArtifactoryPublish() {
+    //Support for older publishing style
+    project.with {
+      withPluginId('artifactory') {
+        project.tasks.maybeCreate('publish').configure {
+          group = 'publishing'
+        }
+        project.tasks[CiLifecyclePlugin.CI_LIFECYCLE_TASK_NAME].dependsOn project.tasks.publish
+        project.tasks.publish.dependsOn project.tasks.artifactoryPublish
+      }
+    }
+  }
+
+  private configurePublishTask() {
+    project.with {
+      withTask(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME) { Task publishTask ->
+        withTask('build') { Task buildTask ->
+          publishTask.dependsOn buildTask
+        }
+      }
+    }
+  }
+
   private void configurePublishing() {
-    configureBintrayPublishing()
-    configureArtifactoryPublishing()
     configurePluginPublishing()
     configureMavenPublishing()
     configureIvyPublishing()
+    withAnyPlugin(['ivy-publish', 'maven-publish']) {
+      configureBintrayPublishing()
+      configureArtifactoryPublishing()
+    }
     //TODO: Snapshot verification
   }
 
   private void configurePluginPublishing() {
     project.with {
       plugins.withId('com.gradle.plugin-publish') {
+        // Add maven publish for local install and SNAPSHOT publishing
+        plugins.apply(MavenPublishPlugin)
         tasks.getByName(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME).dependsOn tasks.getByName('publishPlugins')
         tasks.'publishPlugins'.mustRunAfter 'build'
         // Only publish plugin releases.

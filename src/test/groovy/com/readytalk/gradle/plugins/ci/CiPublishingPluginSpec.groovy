@@ -1,11 +1,13 @@
 package com.readytalk.gradle.plugins.ci
 
+import com.gradle.publish.PublishPlugin
 import com.readytalk.gradle.TestUtils
 import nebula.test.ProjectSpec
 import org.gradle.api.artifacts.repositories.IvyArtifactRepository
 import org.gradle.api.publish.ivy.IvyPublication
 import org.gradle.api.publish.ivy.plugins.IvyPublishPlugin
 import org.gradle.api.publish.ivy.tasks.PublishToIvyRepository
+import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.publish.plugins.PublishingPlugin
 import spock.lang.Ignore
 import spock.lang.Unroll
@@ -62,6 +64,20 @@ class CiPublishingPluginSpec extends ProjectSpec implements TestUtils {
 
     then:
     project.publishing.repositories.getByName('local') instanceof IvyArtifactRepository
+  }
+
+  def "applies maven-publish when plugin-publish is applied"() {
+    given:
+    project.with{
+      plugins.apply "com.gradle.plugin-publish"
+      plugins.apply CiPublishingPlugin
+    }
+
+    when:
+    project.evaluate()
+
+    then:
+    project.pluginManager.hasPlugin('maven-publish')
   }
 
   @Ignore('must be rewritten as integration test for Gradle 2.4+')
