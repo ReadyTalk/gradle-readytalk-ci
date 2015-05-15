@@ -125,6 +125,9 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
       buildId = env.'BUILD_ID'
       branch = env.'GIT_BRANCH'
       ci = true
+      masterBranch = isMaster(branch)
+      releaseBranch = isReleaseBranch(branch)
+      release = isReleaseTag(branch)
     }
   }
 
