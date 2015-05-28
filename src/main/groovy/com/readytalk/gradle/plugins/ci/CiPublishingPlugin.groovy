@@ -11,6 +11,8 @@ import org.gradle.api.publish.Publication
 import org.gradle.api.publish.ivy.IvyPublication
 import org.gradle.api.publish.ivy.tasks.GenerateIvyDescriptor
 import org.gradle.api.publish.ivy.tasks.PublishToIvyRepository
+import org.gradle.api.publish.maven.MavenArtifact
+import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom
 import org.gradle.api.publish.plugins.PublishingPlugin
@@ -173,6 +175,7 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
         //Auto map publications to artifactory publishing
         publishing {
           publications.all { Publication pub ->
+            modelPublicationWiring(pub, 'artifactoryPublish')
             project.tasks.artifactoryPublish { pubTask ->
               pubTask.publications(pub.name)
             }
@@ -185,12 +188,57 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
   private void configureBintrayPublishing() {
     project.with {
       withPluginId('com.jfrog.bintray') {
-        //TODO: Expand bintray support
-        logger.info('Bintray support limited to publish wiring only')
+        if(GradleVersion.current() < GradleVersion.version('2.4')) {
+          logger.warn('com.readytalk.ci.publishing: bintray auto-wiring support limited for Gradle < 2.4')
+        }
+
+        plugins.withId('maven-publish') {
+          tasks.withType(GenerateMavenPom) { pomTask ->
+            tasks.'bintrayUpload'.dependsOn pomTask
+          }
+        }
+
         tasks.getByName(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME).dependsOn tasks.getByName('bintrayUpload')
         tasks.'bintrayUpload'.mustRunAfter 'build'
-        // Bintray only handles releases.
+        // Bintray only handles releases by default
         tasks.'bintrayUpload'.onlyIf { infoExt.isRelease() }
+        publishing {
+          publications.all { Publication pub ->
+            //Gradle <= 2.3
+            bintray.publications += pub.name
+            //Gradle >= 2.4
+            modelPublicationWiring(pub, 'bintrayUpload')
+          }
+        }
+      }
+    }
+  }
+
+  private Set<Task> tasksForPublication(Publication pub) {
+    if(pub instanceof MavenPublication || pub instanceof IvyPublication) {
+      return (pub.getArtifacts().collect { artifact ->
+        artifact.getBuildDependencies().getDependencies()
+      }.flatten())
+    } else {
+      logger.warn "Publication ${pub.getName()} is not an ivy or maven artifact, ignoring request for task dependencies."
+      return [] as Set<Task>
+    }
+  }
+
+  private void minGradleVersion(String versionString, Closure config) {
+    if(GradleVersion.current() >= GradleVersion.version(versionString)) {
+      config.call()
+    }
+  }
+
+  //Cause the named task to depend on all tasks Gradle reports as being required for the given publication
+  //Used as a workaround for jfrog publishing not playing nice with Gradle 2.4+
+  private void modelPublicationWiring(Publication publication, String publishTaskName) {
+    minGradleVersion('2.4') {
+      project.model {
+        tasks."${publishTaskName}" {
+          dependsOn tasksForPublication(publication)
+        }
       }
     }
   }
