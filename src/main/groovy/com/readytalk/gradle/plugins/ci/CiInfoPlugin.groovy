@@ -82,7 +82,7 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
 
   private boolean isReleaseBranch(String branch) {
     // TODO: Try to resolve HEAD to release branch
-    branch ==~ /release_\d+\.\d+\.\d+/
+    branch ==~ /(.*\/)?release_\d+\.\d+\.\d+/
   }
 
   private void populateCiInfo(Map env) {

@@ -2,6 +2,7 @@
 
   * 0.4.4
     - More robust Gradle 2.4 support for artifactory/bintray plugins
+    - Allow prefix for release branch (e.g. origin/release_x.y.z)
     - [planned] explicit drone.io support
 
   * 0.4.3
