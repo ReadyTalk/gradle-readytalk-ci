@@ -14,9 +14,9 @@ class ListenableExtension extends ExpandoExtension {
     def propertyMissing(String key)
   }
 
-  private Map<String,List<Closure>> listeners = [:]
-  private Map<String,Set<Closure>> internalEdge = [:]
-  private Map<String,Set<String>> dependencyMap = [:]
+  protected Map<String,List<Closure>> listeners = [:]
+  protected Map<String,Set<Closure>> internalEdge = [:]
+  protected Map<String,Set<String>> dependencyMap = [:]
 
   //TODO: Caveat - can't easily override this once wired up
   def addSetter(String property, Closure setter) {
@@ -34,15 +34,15 @@ class ListenableExtension extends ExpandoExtension {
   }
 
   //Syntactic sugar
-  def invokeMethod(String name, args) {
+  def methodMissing(String name, args) {
     if(args.size() == 1 && args.first() instanceof Closure) {
       addSetter(name, args.first())
     } else {
-      super.invokeMethod(name, args)
+      throw new MissingMethodException(name, this.class, args)
     }
   }
 
-  private def addInternalSetter(String prop, String dependency, Closure listener) {
+  protected def addInternalSetter(String prop, String dependency, Closure listener) {
     if(prop == dependency) {
       throw new CircularReferenceException("Property cannot depend on itself (${prop})")
     }
