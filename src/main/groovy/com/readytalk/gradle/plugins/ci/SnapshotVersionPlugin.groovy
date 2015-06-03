@@ -10,15 +10,11 @@ class SnapshotVersionPlugin implements Plugin<Project>, PluginUtils {
 
   void apply(final Project project) {
     this.project = project
-    project.with {
-      def infoPlugin = plugins.apply(CiInfoPlugin)
-      this.infoExt = infoPlugin.extension
+    def infoPlugin = project.plugins.apply(CiInfoPlugin)
+    this.infoExt = infoPlugin.extension
 
-      afterEvaluate {
-        if (!infoExt.isRelease()) {
-          project.version += "-SNAPSHOT"
-        }
-      }
-    }
+    infoExt.watchProperty('release', { baseVersion, boolean release ->
+      project.version += release ? '' : '-SNAPSHOT'
+    }.curry(project.version))
   }
 }

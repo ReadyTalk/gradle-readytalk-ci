@@ -58,9 +58,9 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
   private void setDefaults() {
     extension.buildNumber = project.plugins.findPlugin('info-ci')?.extension?.buildNumber ?: 'local'
     extension.branch = gitRepo.branch
-    extension.masterBranch { isMaster(extension.branch) }
-    extension.releaseBranch = isReleaseBranch(extension.branch)
-    extension.release = isReleaseTag(extension.branch)
+    extension.masterBranch { isMaster(branch) }
+    extension.releaseBranch { isReleaseBranch(branch) }
+    extension.release { isReleaseTag(branch) }
   }
 
   private boolean refResolvesToMaster() {
@@ -115,7 +115,6 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
       ci = true
       masterBranch { isMaster(branch) && travisPullRequest == 'false' }
       releaseBranch { isReleaseBranch(branch) && travisPullRequest == 'false' }
-      release { isReleaseTag(branch) }
     }
   }
 
@@ -126,9 +125,6 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
       buildId = env.'BUILD_ID'
       branch = env.'GIT_BRANCH'
       ci = true
-      masterBranch { isMaster(branch) }
-      releaseBranch { isReleaseBranch(branch) }
-      release { isReleaseTag(branch) }
     }
   }
 
@@ -176,7 +172,7 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
   private void configureArtifactory() {
     project.with {
       withAnyPlugin(['artifactory', 'com.jfrog.artifactory']) {
-        afterEvaluate {
+        extension.watchProperty('buildNumber') {
           clientConfig.info.setBuildNumber(extension.buildNumber)
         }
       }

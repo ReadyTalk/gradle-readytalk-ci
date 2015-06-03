@@ -48,8 +48,42 @@ class ExtensionUtilsTest extends Specification {
     obj.delta == 'Hello World!'
   }
 
-  @Ignore
-  def "allows chained closures for autobinding"() {
+  def "allows overwriting closure for same dependency"() {
+    when:
+    def obj = new ListenableExtension()
+    obj.alpha = 'alpha'
+    obj.delta { alpha }
+    String first = obj.delta
+    obj.delta { alpha + "beta" }
+    String second = obj.delta
+    obj.alpha = 'ALPHA'
+    String third = obj.delta
 
+    then:
+    first == 'alpha'
+    second == 'alphabeta'
+    third == 'ALPHAbeta'
+  }
+
+  def "ignores stale dependencies"() {
+    when:
+    def obj = new ListenableExtension()
+    obj.alpha = 'alpha'
+    obj.beta = 'beta'
+    obj.delta { alpha }
+    String first = obj.delta
+    obj.delta { beta }
+    String second = obj.delta
+    obj.beta = 'newvalue'
+    String third = obj.delta
+    //Should do nothing as delta should only be wired to beta now
+    obj.alpha = 'ALPHA'
+    String fourth = obj.delta
+
+    then:
+    first == 'alpha'
+    second == 'beta'
+    third == 'newvalue'
+    fourth == 'newvalue'
   }
 }
