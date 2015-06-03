@@ -1,7 +1,14 @@
 package com.readytalk.gradle.util
 
-/**
- * Created by jason.miller on 6/2/15.
- */
+//TODO: Can this be a trait?
 class ExpandoExtension {
+  Map<String, Object> props = [:]
+
+  def propertyMissing(String name, value) {
+    props.put(name, value)
+  }
+
+  def propertyMissing(String name) {
+    props.get(name)
+  }
 }
