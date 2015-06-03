@@ -84,4 +84,12 @@ class ListenableExtension extends ExpandoExtension {
     listeners.get(key).add(listener)
     listener.call(this.getProperty(key))
   }
+
+  def watchProperties(Set<String> properties, Closure listener) {
+    properties.each { String property ->
+      watchProperty(property) { value ->
+        listener.call(*(properties.collect(this.&getProperty)))
+      }
+    }
+  }
 }

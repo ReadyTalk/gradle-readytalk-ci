@@ -14,7 +14,8 @@ class SnapshotVersionPlugin implements Plugin<Project>, PluginUtils {
     this.infoExt = infoPlugin.extension
 
     infoExt.watchProperty('release', { baseVersion, boolean release ->
-      project.version += release ? '' : '-SNAPSHOT'
+      project.version = baseVersion + (release ? '' : '-SNAPSHOT')
+      project.logger.info "release status set to ${release}, updating version to ${project.version}"
     }.curry(project.version))
   }
 }
