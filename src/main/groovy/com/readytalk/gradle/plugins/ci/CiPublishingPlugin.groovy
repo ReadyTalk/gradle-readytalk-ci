@@ -40,7 +40,7 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
   private configureLegacyArtifactoryPublish() {
     //Support for older publishing style
     project.with {
-      withPluginId('artifactory') {
+      withAnyPlugin(['com.jfrog.artifactory-upload','artifactory']) {
         project.tasks.maybeCreate('publish').configure {
           group = 'publishing'
         }

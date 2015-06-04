@@ -1,13 +1,17 @@
 #*Changelog*
-  * *0.6.0* [planned]
+  * *0.6.0 - 1.0.0* [planned]
     - Use gradle-extended-info plugin for CI metadata
 
-  * *0.5.0* [planned]
+  * *0.5.1* [planned]
+    - [planned] explicit drone.io support
+
+  * 0.5.0
     - Properties in buildEnv now auto-recalculate on changes to dependent values (e.g. overriding branch will cause things like the release boolean to re-evaluate)
     - Version snapshot status now updates automatically instead of relying on afterEvaluate, so the correct version string should be available as early as possible
-    - More robust Gradle 2.4 support for artifactory/bintray plugins
+      NOTE: version expected to be set before plugins applied - if not, you'll need to set buildEnv.baseVersion
     - Allow prefix for release branch (e.g. origin/release_x.y.z)
-    - [planned] explicit drone.io support
+    - Expanded artifactory metadata
+    - Check both id strings for legacy artifactory upload plugin
 
   * 0.4.3
     - Jenkins-related bugfixes
