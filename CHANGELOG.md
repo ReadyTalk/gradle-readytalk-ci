@@ -1,9 +1,10 @@
 #*Changelog*
   * *0.6.0 - 1.0.0* [planned]
     - Use gradle-extended-info plugin for CI metadata
+    - explicit drone.io support
 
-  * *0.5.1* [planned]
-    - [planned] explicit drone.io support
+  * *0.5.1*
+    - Smarter config for legacy artifactory-upload plugin
 
   * 0.5.0
     - Properties in buildEnv now auto-recalculate on changes to dependent values (e.g. overriding branch will cause things like the release boolean to re-evaluate)

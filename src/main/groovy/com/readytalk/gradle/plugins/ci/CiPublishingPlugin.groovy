@@ -1,5 +1,6 @@
 package com.readytalk.gradle.plugins.ci
 
+import com.readytalk.gradle.plugins.ci.tasks.CiTask
 import com.readytalk.gradle.util.PluginUtils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -39,12 +40,16 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
 
   private configureLegacyArtifactoryPublish() {
     //Support for older publishing style
-    project.with {
-      withAnyPlugin(['com.jfrog.artifactory-upload','artifactory']) {
+    withAnyPlugin(['com.jfrog.artifactory-upload','artifactory']) {
+      project.afterEvaluate {
         project.tasks.maybeCreate('publish').configure {
           group = 'publishing'
         }
-        project.tasks[CiLifecyclePlugin.CI_LIFECYCLE_TASK_NAME].dependsOn project.tasks.publish
+      }
+      project.tasks.matching { it.name == 'publish' }.all { publishTask ->
+        project.tasks.withType(CiTask.class) {
+          it.dependsOn project.tasks.publish
+        }
         project.tasks.publish.dependsOn project.tasks.artifactoryPublish
       }
     }
