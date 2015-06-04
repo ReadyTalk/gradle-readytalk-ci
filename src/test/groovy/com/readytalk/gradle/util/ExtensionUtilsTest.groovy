@@ -86,4 +86,31 @@ class ExtensionUtilsTest extends Specification {
     third == 'newvalue'
     fourth == 'newvalue'
   }
+
+  def "can safely add listener to missing properties"() {
+    when:
+    def obj = new ListenableExtension()
+    obj.watchProperty('alpha') { String alpha ->
+      println "Hello world!"
+    }
+
+    then:
+    noExceptionThrown()
+  }
+
+  def "optional properties can be set post facto"() {
+    when:
+    def obj = new ListenableExtension()
+    String value = 'original'
+    obj.watchProperty('alpha') { String alpha ->
+      value = alpha
+    }
+    String first = value
+    obj.alpha = 'newValue'
+    String second = value
+
+    then:
+    first == 'original'
+    second == 'newValue'
+  }
 }
