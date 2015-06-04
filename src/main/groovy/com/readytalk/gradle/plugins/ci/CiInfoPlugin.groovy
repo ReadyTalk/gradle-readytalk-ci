@@ -120,11 +120,12 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
 
   private void populateJenkinsInfo(Map env) {
     extension.with {
-      ciProvider = 'jenkins'
       buildNumber = env.'BUILD_NUMBER'
+      buildHost = env.'HOSTNAME'
       buildId = env.'BUILD_ID'
       branch = env.'GIT_BRANCH'
       ci = true
+      ciProvider = 'jenkins'
     }
   }
 
@@ -169,11 +170,34 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
     }
   }
 
+  //TODO: Split this stuff out into a broker/collector form similar to nebula.info
   private void configureArtifactory() {
     project.with {
       withAnyPlugin(['artifactory', 'com.jfrog.artifactory']) {
-        extension.watchProperty('buildNumber') {
-          clientConfig.info.setBuildNumber(extension.buildNumber)
+        extension.watchProperty('buildNumber') { String buildNumber ->
+          clientConfig.info.setBuildNumber(buildNumber)
+        }
+        extension.watchProperty('ciProvider') { String provider ->
+          def env = System.getenv()
+          clientConfig.info.with {
+            switch(provider) {
+              case 'jenkins':
+                setVcsUrl(env.'GIT_URL')
+                setBuildUrl(env.'BUILD_URL')
+                setBuildName(env.'JOB_NAME' ?: getBuildName())
+                setPrincipal(env.'BUILD_USER_ID' ?: getPrincipal())
+                break
+              case 'travis':
+                setVcsUrl("https://github.com/${buildEnv.travisRepoSlug}")
+                setBuildUrl("https://travis-ci.org/${extension.travisRepoSlug}/builds/${extension.travisBuildId}")
+                setBuildName(extension.travisRepoSlug)
+                break
+              default:
+                setBuildUrl('')
+                setVcsUrl('')
+            }
+            setVcsRevision(gitRepo.resolve('HEAD').toString())
+          }
         }
       }
     }
