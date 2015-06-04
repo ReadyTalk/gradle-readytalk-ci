@@ -58,9 +58,9 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
   private void setDefaults() {
     extension.buildNumber = project.plugins.findPlugin('info-ci')?.extension?.buildNumber ?: 'local'
     extension.branch = gitRepo.branch
-    extension.masterBranch = isMaster(extension.branch)
-    extension.releaseBranch = isReleaseBranch(extension.branch)
-    extension.release = isReleaseTag(extension.branch)
+    extension.masterBranch { isMaster(branch) }
+    extension.releaseBranch { isReleaseBranch(branch) }
+    extension.release { isReleaseTag(branch) }
   }
 
   private boolean refResolvesToMaster() {
@@ -82,7 +82,7 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
 
   private boolean isReleaseBranch(String branch) {
     // TODO: Try to resolve HEAD to release branch
-    branch ==~ /(.*\/)?release_\d+\.\d+\.\d+/
+    branch ==~ /(origin\/)?release_\d+\.\d+\.\d+/ || branch ==~ '(origin/)?project.name-.*'
   }
 
   private void populateCiInfo(Map env) {
@@ -101,6 +101,7 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
 
   private void populateTravisInfo(Map env) {
     // Reference: http://docs.travis-ci.com/user/ci-environment/#Environment-variables
+    //TODO: Option 2: info extension auto-listens to other buildEnv values?
     extension.with {
       ciProvider = 'travis'
       env.each { k, v ->
@@ -112,22 +113,19 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
       buildNumber = env.'TRAVIS_BUILD_NUMBER'
       branch = env.'TRAVIS_BRANCH'
       ci = true
-      masterBranch = isMaster(branch) && travisPullRequest == 'false'
-      releaseBranch = isReleaseBranch(branch) && travisPullRequest == 'false'
-      release = isReleaseTag(branch)
+      masterBranch { isMaster(branch) && travisPullRequest == 'false' }
+      releaseBranch { isReleaseBranch(branch) && travisPullRequest == 'false' }
     }
   }
 
   private void populateJenkinsInfo(Map env) {
     extension.with {
-      ciProvider = 'jenkins'
       buildNumber = env.'BUILD_NUMBER'
+      buildHost = env.'HOSTNAME'
       buildId = env.'BUILD_ID'
       branch = env.'GIT_BRANCH'
       ci = true
-      masterBranch = isMaster(branch)
-      releaseBranch = isReleaseBranch(branch)
-      release = isReleaseTag(branch)
+      ciProvider = 'jenkins'
     }
   }
 
@@ -172,11 +170,34 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
     }
   }
 
+  //TODO: Split this stuff out into a broker/collector form similar to nebula.info
   private void configureArtifactory() {
     project.with {
       withAnyPlugin(['artifactory', 'com.jfrog.artifactory']) {
-        afterEvaluate {
-          clientConfig.info.setBuildNumber(extension.buildNumber)
+        extension.watchProperty('buildNumber') { String buildNumber ->
+          clientConfig.info.setBuildNumber(buildNumber)
+        }
+        extension.watchProperty('ciProvider') { String provider ->
+          def env = System.getenv()
+          clientConfig.info.with {
+            switch(provider) {
+              case 'jenkins':
+                setVcsUrl(env.'GIT_URL')
+                setBuildUrl(env.'BUILD_URL')
+                setBuildName(env.'JOB_NAME' ?: getBuildName())
+                setPrincipal(env.'BUILD_USER_ID' ?: getPrincipal())
+                break
+              case 'travis':
+                setVcsUrl("https://github.com/${buildEnv.travisRepoSlug}")
+                setBuildUrl("https://travis-ci.org/${extension.travisRepoSlug}/builds/${extension.travisBuildId}")
+                setBuildName(extension.travisRepoSlug)
+                break
+              default:
+                setBuildUrl('')
+                setVcsUrl('')
+            }
+            setVcsRevision(gitRepo.resolve('HEAD').name)
+          }
         }
       }
     }

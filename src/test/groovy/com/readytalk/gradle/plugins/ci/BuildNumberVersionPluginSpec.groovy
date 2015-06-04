@@ -11,8 +11,8 @@ class BuildNumberVersionPluginSpec extends PluginProjectSpec {
   def "appends buildnumber to version for ci builds"() {
     given:
     project.with {
-      apply plugin: this.pluginName
       version = "1.2.3"
+      apply plugin: this.pluginName
       buildEnv.ci = true
       buildEnv.buildNumber = 37
     }
@@ -27,8 +27,8 @@ class BuildNumberVersionPluginSpec extends PluginProjectSpec {
   def "appends '-DEV' to version for non-ci builds"() {
     given:
     project.with {
-      apply plugin: this.pluginName
       version = "1.2.3"
+      apply plugin: this.pluginName
       buildEnv.ci = false
     }
 

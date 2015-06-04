@@ -11,7 +11,7 @@ plugins {
   id 'com.gradle.plugin-publish' version '0.9.0'
   id 'com.jfrog.artifactory' version '3.1.1'
   id 'nebula.info' version '2.2.2'
-  id 'com.github.kt3k.coveralls' version '2.0.1'
+  id 'com.github.kt3k.coveralls' version '2.4.0'
 }
 
 apply plugin: 'com.readytalk.ci'
@@ -28,17 +28,17 @@ dependencies {
     'org.eclipse.jgit:org.eclipse.jgit:3.7.1.201504261725-r',
   )
 
-  //Gradle doesn't yet handle dependency resolution conflicts for localGroovy()
-  //See: http://forums.gradle.org/gradle/topics/conflicting_module_versions_with_groovy_gradle_2_0_rc_1
-  testCompile('com.netflix.nebula:nebula-test:2.2.1') {
-    exclude group:'org.codehaus.groovy'
+  configurations {
+    //conflicts with localGroovy()
+    testCompile.exclude module: 'groovy-all'
   }
 
   //Allow testing of optional plugin configuration
   testCompile (
-    'org.jfrog.buildinfo:build-info-extractor-gradle:3.0.1',
-    'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2',
     'com.gradle.publish:plugin-publish-plugin:0.9.0',
+    'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2',
+    'com.netflix.nebula:nebula-test:2.2.1',
+    'org.jfrog.buildinfo:build-info-extractor-gradle:3.1.1',
   )
 }
 

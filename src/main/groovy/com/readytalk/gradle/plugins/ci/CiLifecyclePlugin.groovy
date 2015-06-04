@@ -50,6 +50,7 @@ class CiLifecyclePlugin implements Plugin<Project>, PluginUtils {
   private void enablePublishing() {
     withTask(PublishingPlugin.PUBLISH_LIFECYCLE_TASK_NAME) { publishTask ->
       project.with {
+        //TODO: Use model dsl if Gradle >= 2.4
         afterEvaluate {
           if (infoExt.isCi() && (infoExt.isMasterBranch() || infoExt.isRelease() || infoExt.isReleaseBranch())) {
             tasks[CI_LIFECYCLE_TASK_NAME].dependsOn publishTask

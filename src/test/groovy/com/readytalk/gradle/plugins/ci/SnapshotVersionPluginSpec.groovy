@@ -13,8 +13,8 @@ class SnapshotVersionPluginSpec extends PluginProjectSpec {
   def "appends '-SNAPSHOT' to version for non-release builds (ci = #ci)"() {
     given:
     project.with {
-      apply plugin: this.pluginName
       version = "1.2.3"
+      apply plugin: this.pluginName
       buildEnv.ci = ci
       buildEnv.release = false
     }
@@ -32,8 +32,8 @@ class SnapshotVersionPluginSpec extends PluginProjectSpec {
   def "doesn't append anything for release builds"() {
     given:
     project.with {
-      apply plugin: this.pluginName
       version = "1.2.3"
+      apply plugin: this.pluginName
       buildEnv.ci = true
       buildEnv.release = true
     }

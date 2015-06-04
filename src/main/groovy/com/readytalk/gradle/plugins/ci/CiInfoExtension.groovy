@@ -1,8 +1,8 @@
 package com.readytalk.gradle.plugins.ci
 
-class CiInfoExtension {
-  Map<String, Object> props = [:]
+import com.readytalk.gradle.util.ListenableExtension
 
+class CiInfoExtension extends ListenableExtension {
   String branch = ''
   String buildStatus = 'integration'
   String ciProvider = 'none'
@@ -11,12 +11,4 @@ class CiInfoExtension {
   boolean masterBranch = false
   boolean release = false
   boolean ci = false
-
-  def propertyMissing(String name, value) {
-    props.put(name, value)
-  }
-
-  def propertyMissing(String name) {
-    props.get(name)
-  }
 }
