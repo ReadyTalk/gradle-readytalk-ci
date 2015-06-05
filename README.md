@@ -42,7 +42,7 @@ tasks and also apply the 'base' Gradle plugin:
 
 ```groovy
 plugins {
-  id 'com.readytalk.ci' version '0.4.3'
+  id 'com.readytalk.ci' version '0.5.1'
 }
 ```
 
@@ -54,8 +54,8 @@ For a basic `java` project published to an Artifactory repository Maven-style
 plugins {
   id 'java'
   id 'maven-publish'
-  id 'com.readytalk.ci' version '0.4.3'
-  id 'com.jfrog.artifactory' version '3.0.3'
+  id 'com.readytalk.ci' version '0.5.1'
+  id 'com.jfrog.artifactory' version '3.1.1'
 }
 
 apply plugin: 'com.readytalk.ci.version.snapshot'
@@ -78,8 +78,8 @@ a continuous delivery pipeline):
 plugins {
   id 'java'
   id 'ivy-publish'
-  id 'com.readytalk.ci' version '0.4.3'
-  id 'com.jfrog.artifactory' version '3.0.3'
+  id 'com.readytalk.ci' version '0.5.1'
+  id 'com.jfrog.artifactory' version '3.1.1'
 }
 
 apply plugin: 'com.readytalk.ci.version.buildnumber'
@@ -127,9 +127,11 @@ The ReadyTalk CI plugin provides the following conventions:
 ## Optional Versioning Plugins
 There are two versioning convention plugins provided with the ReadyTalk CI
 plugin, but they need to be applied separately. For both of these plugins, it
-is reccommended the version be stored in `gradle.properties`, but other
-mechanisms should work - the version string is modified after the build
-script's configuration phase has been evaluated.
+is reccommended the version be stored in `gradle.properties` - if you need to
+set it later after plugins are applied, set `buildEnv.baseVersion` instead.
+
+The version string is updated immediately on plugin application or when setting
+buildEnv.baseVersion, so it should be consistent throughout the rest of the build.
 
 ### Snapshot version plugin
 This plugin provides a Maven-style versioning conventions where '-SNAPSHOT' is
@@ -161,20 +163,16 @@ apply plugin: 'com.readytalk.ci.version.buildnumber'
 ### Notes
 
   * Uses an early version of the `nebula.info` plugin by default to maintain
-    Java 6 compatibility. You can manually add the newer 2.0.0 version to your
+    Java 6 compatibility. You can manually add the newer 2.2.2 version to your
     project if using Java 7 or later.
   * Requires Gradle 2.1 or later
 
 ### Future work
 
   * Move more conventions into plugin
-  * Include release/versioning conventions
-  * Better extensibility - allow third parties to extend base functionality
-    - May want to open pull requests with nebula plugins e.g. can't extend nebula CI plugin as-is
+  * Better extensibility - consider integrating with the [gradle-extended-info-plugin][] project
   * Better integration tests for different types of projects
   * Example projects
   * Optional default publications
-  * Optionally disable nebula jar manifest modification
-    - This can cause issues with Gradle's up-to-date checks on jars
 
-### Gradle 2.4 support
+[gradle-extended-info-plugin]: https://github.com/boxheed/gradle-extended-info-plugin
