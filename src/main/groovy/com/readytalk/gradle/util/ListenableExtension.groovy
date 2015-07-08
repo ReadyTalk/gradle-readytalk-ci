@@ -7,6 +7,7 @@ import org.gradle.api.CircularReferenceException
  *
  * This is similar to how InfoBrokerPlugin works in the nebula.info plugin
  * It's more complex though since it can affect project setup and not just metadata
+ * TODO: Ideally this could do external dependencies as well, e.g. calculate value on get rather than set
  */
 //TODO: Could this be a trait?
 class ListenableExtension extends ExpandoExtension {

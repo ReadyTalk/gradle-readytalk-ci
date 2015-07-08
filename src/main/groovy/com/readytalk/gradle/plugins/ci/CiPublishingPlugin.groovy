@@ -12,7 +12,6 @@ import org.gradle.api.publish.Publication
 import org.gradle.api.publish.ivy.IvyPublication
 import org.gradle.api.publish.ivy.tasks.GenerateIvyDescriptor
 import org.gradle.api.publish.ivy.tasks.PublishToIvyRepository
-import org.gradle.api.publish.maven.MavenArtifact
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom
@@ -240,9 +239,22 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
   //Used as a workaround for jfrog publishing not playing nice with Gradle 2.4+
   private void modelPublicationWiring(Publication publication, String publishTaskName) {
     minGradleVersion('2.4') {
-      project.model {
-        tasks."${publishTaskName}" {
-          dependsOn tasksForPublication(publication)
+      project.with {
+        model {
+          tasks."${publishTaskName}" {
+            dependsOn tasksForPublication(publication)
+
+            //Required to workaround issues with the artifactory plugin and Gradle 2.5
+            String publicationName = publication.name.capitalize()
+            switch(publication) {
+              case IvyPublication:
+                dependsOn tasks."generateDescriptorFileFor${publicationName}Publication"
+                break
+              case MavenPublication:
+                dependsOn tasks."generatePomFileFor${publicationName}Publication"
+                break
+            }
+          }
         }
       }
     }

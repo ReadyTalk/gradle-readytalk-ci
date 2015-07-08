@@ -12,3 +12,4 @@ class CiInfoExtension extends ListenableExtension {
   boolean release = false
   boolean ci = false
 }
+

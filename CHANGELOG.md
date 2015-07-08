@@ -3,6 +3,9 @@
     - Use gradle-extended-info plugin for CI metadata
     - explicit drone.io support
 
+  * 0.5.2
+    - Fix for artifactoryPublish in Gradle 2.5
+
   * 0.5.1
     - Smarter config for legacy artifactory-upload plugin
 
