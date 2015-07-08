@@ -46,7 +46,7 @@ class LifecycleIntegTest extends IntegrationSpec {
     then:
     ExecutionResult result = runTasksSuccessfully(publishTaskName)
     result.wasExecuted('fauxArtifact')
-    result.wasExecuted('generateMavenPomFileForMavenPublication')
+    result.wasExecuted('generatePomFileForMavenPublication')
 
     where:
     publishPlugin               | publishTaskName
