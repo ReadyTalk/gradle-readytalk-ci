@@ -196,7 +196,7 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
                 setBuildUrl('')
                 setVcsUrl('')
             }
-            setVcsRevision(gitRepo.resolve('HEAD').name)
+            setVcsRevision(gitRepo.resolve('HEAD')?.name ?: '')
           }
         }
       }
