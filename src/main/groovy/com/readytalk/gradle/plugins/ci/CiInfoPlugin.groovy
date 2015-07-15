@@ -19,14 +19,19 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
   static final String EXTENSION_NAME = 'buildEnv'
   Project project
 
-  //TODO: Consider using GrGit instead of JGit
-  Repository gitRepo
+  //TODO: support other VCS systems, possibly by delegating to a third-party gradle plugin
+  protected Repository gitRepo
   CiInfoExtension extension
 
   void apply(final Project project) {
     this.project = project
     this.extension = new CiInfoExtension()
-    this.gitRepo = new RepositoryBuilder().findGitDir(project.rootDir).build()
+    def repoSetup = new RepositoryBuilder().findGitDir(project.rootDir)
+    if(repoSetup.gitDir == null) {
+      project.logger.warn("No git directory directory found - this will prevent many of the CI plugin features from working.")
+    } else {
+      this.gitRepo = repoSetup.build()
+    }
 
     applyNebulaInfoPlugins()
     addCiInfoExtension()
@@ -57,13 +62,15 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
 
   private void setDefaults() {
     extension.buildNumber = project.plugins.findPlugin('info-ci')?.extension?.buildNumber ?: 'local'
-    extension.branch = gitRepo.branch
+    extension.branch = gitRepo?.branch ?: ''
     extension.masterBranch { isMaster(branch) }
     extension.releaseBranch { isReleaseBranch(branch) }
     extension.release { isReleaseTag(branch) }
   }
 
   private boolean refResolvesToMaster() {
+    if(gitRepo == null) return false
+
     def masterRef = (gitRepo.getRef('refs/heads/master') ?:
             gitRepo.getRef('refs/heads/origin/master'))?.objectId?.name
     def headRef = gitRepo.resolve('HEAD')?.name
@@ -196,7 +203,9 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
                 setBuildUrl('')
                 setVcsUrl('')
             }
-            setVcsRevision(gitRepo.resolve('HEAD')?.name ?: '')
+            if (gitRepo != null) {
+              setVcsRevision(gitRepo.resolve('HEAD')?.name ?: 'NONE')
+            }
           }
         }
       }

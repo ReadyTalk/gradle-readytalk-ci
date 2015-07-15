@@ -76,7 +76,7 @@ class CiInfoPluginSpec extends PluginProjectSpec implements TestUtils {
     given:
     def infoPlugin = new CiInfoPlugin()
     infoPlugin.setExtension(new CiInfoExtension())
-    infoPlugin.setGitRepo(repo)
+    infoPlugin.gitRepo = repo
     infoPlugin.setProject(project)
     infoPlugin.setDefaults()
 

@@ -7,20 +7,15 @@ import org.gradle.api.publish.plugins.PublishingPlugin
 import spock.lang.Unroll
 
 class CiLifecyclePluginSpec extends PluginProjectSpec implements TestUtils {
-  Repository repo
-
   @Override
   String getPluginName() {
     return 'com.readytalk.ci.lifecycle'
   }
 
-  def setup() {
-    repo = createMockGitRepo()
-  }
-
   @Unroll("where release: #isRelease, master: #isMaster, ci: #isCi")
   def "enables publishing on ci build"() {
     given:
+    createMockGitRepo()
     project.with {
       apply plugin: 'com.readytalk.ci'
       apply plugin: 'ivy-publish'
@@ -50,6 +45,9 @@ class CiLifecyclePluginSpec extends PluginProjectSpec implements TestUtils {
   }
 
   def "can apply with jacoco plugin"() {
+    setup:
+    createMockGitRepo()
+
     when:
     project.plugins.with {
       apply(this.pluginName)
@@ -59,5 +57,20 @@ class CiLifecyclePluginSpec extends PluginProjectSpec implements TestUtils {
 
     then:
     hasTaskDependency('check', 'jacocoTestReport')
+  }
+
+  //Warnings are okay, but don't break build setup just because .git isn't present
+  def "can apply without git directory"() {
+    setup:
+    project.file('.git').deleteDir()
+
+    when:
+    project.plugins.with {
+      apply(this.pluginName)
+      apply(CiInfoPlugin)
+    }
+
+    then:
+    noExceptionThrown()
   }
 }
