@@ -3,6 +3,10 @@
     - Use gradle-extended-info plugin for CI metadata
     - explicit drone.io support
 
+* 0.5.3
+    - Enable plugins to be applied even without a .git directory
+      (prints warning as all dependent functionality will be disabled)
+
   * 0.5.2
     - Fix for artifactoryPublish in Gradle 2.5
 
