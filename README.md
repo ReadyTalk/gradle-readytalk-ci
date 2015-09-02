@@ -11,7 +11,7 @@ external Gradle projects.
 
 ## Goals
 Establish common conventions (particularly around continuous integration) for
-Gradle projects. Takes some inspiration from the [nebula project plugin][] from
+Gradle projects. Inspired by and partially based on the [nebula project plugin][] from
 [Netflix][].
 
 [Netflix]: https://github.com/nebula-plugins
@@ -19,7 +19,7 @@ Gradle projects. Takes some inspiration from the [nebula project plugin][] from
   * Add CI lifecycle task to provide a single entry point for CI systems
   * Abstract over different publishing mechanisms to provide a single `publish`
     and `install` lifecycle tasks
-  * Collect and bake in build metadata into artifacts
+  * Collect and bake in build metadata into artifacts from git and CI systems
   * Apply generic project conventions, such as creating an integTest task and
     source set
 
@@ -162,17 +162,16 @@ apply plugin: 'com.readytalk.ci.version.buildnumber'
 
 ### Notes
 
-  * Uses an early version of the `nebula.info` plugin by default to maintain
-    Java 6 compatibility. You can manually add the newer 2.2.2 version to your
-    project if using Java 7 or later.
   * Requires Gradle 2.1 or later
+  * Requires Java 7 as of 0.6.0+
+  * Build metadata based on nebula.info and gradle-extended-info plugins
+    Enhanced with additional metadata from buildEnv
+    Additional metadata injected for Jenkins and TravisCI
 
 ### Future work
 
+  * Consider integrating with release plugins
   * Move more conventions into plugin
-  * Better extensibility - consider integrating with the [gradle-extended-info-plugin][] project
   * Better integration tests for different types of projects
   * Example projects
-  * Optional default publications
 
-[gradle-extended-info-plugin]: https://github.com/boxheed/gradle-extended-info-plugin
