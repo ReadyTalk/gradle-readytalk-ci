@@ -1,7 +1,8 @@
 package com.readytalk.gradle.plugins.ci
 
+import com.fizzpod.gradle.plugins.info.ci.ContinuousIntegrationInfoProviderResolver
+import com.fizzpod.gradle.plugins.info.ci.TravisProvider
 import com.readytalk.gradle.TestUtils
-import nebula.plugin.info.InfoPlugin
 import nebula.test.PluginProjectSpec
 import org.eclipse.jgit.lib.Repository
 import spock.lang.Shared
@@ -16,7 +17,7 @@ class CiInfoPluginSpec extends PluginProjectSpec implements TestUtils {
   @Shared
   travisEnv = [
       'TRAVIS'             : 'true',
-      'TRAVIS_BUILD_NUMBER': '5678',
+      'TRAVIS_JOB_NUMBER'  : '5678',
       'TRAVIS_BRANCH'      : 'travisMaster',
       'TRAVIS_PULL_REQUEST': '',
   ]
@@ -42,7 +43,6 @@ class CiInfoPluginSpec extends PluginProjectSpec implements TestUtils {
     given:
     project.with {
       apply plugin: pluginName
-      apply plugin: InfoPlugin
       buildEnv.pigs = "flying"
     }
 
@@ -74,6 +74,12 @@ class CiInfoPluginSpec extends PluginProjectSpec implements TestUtils {
   @Unroll
   def "populates info extension from #envMap"() {
     given:
+    //Override environment in upstream plugin
+    ContinuousIntegrationInfoProviderResolver.DEFAULT_PROVIDERS.each { provider ->
+      provider.metaClass.getEnvironmentVariable = { String key ->
+        envMap.get(key)
+      }
+    }
     def infoPlugin = new CiInfoPlugin()
     infoPlugin.setExtension(new CiInfoExtension())
     infoPlugin.gitRepo = repo
@@ -81,6 +87,7 @@ class CiInfoPluginSpec extends PluginProjectSpec implements TestUtils {
     infoPlugin.setDefaults()
 
     when:
+    project.plugins.apply('com.fizzpod.info-ci') //Required to guess ci type
     infoPlugin.populateCiInfo(envMap)
 
     then:
@@ -90,7 +97,7 @@ class CiInfoPluginSpec extends PluginProjectSpec implements TestUtils {
 
     where:
     envMap     | ciProvider | branch          | buildNumber
-    devEnv     | "none"     | 'master'        | 'local'
+    devEnv     | "none"     | 'master'        | 'LOCAL'
     jenkinsEnv | "jenkins"  | 'jenkinsMaster' | '1234'
     travisEnv  | "travis"   | 'travisMaster'  | '5678'
   }

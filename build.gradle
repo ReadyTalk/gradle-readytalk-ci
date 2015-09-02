@@ -10,24 +10,18 @@ plugins {
   id 'maven-publish'
   id 'com.gradle.plugin-publish' version '0.9.1'
   id 'com.jfrog.artifactory' version '3.1.1'
-  id 'nebula.info' version '2.2.2'
   id 'com.github.kt3k.coveralls' version '2.4.0'
 }
 
 apply plugin: 'com.readytalk.ci'
 apply plugin: 'com.readytalk.ci.version.snapshot'
 
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+apply from: file('gradle/dependencies.gradle')
 
 dependencies {
-  compile (
-    gradleApi(),
-    localGroovy(),
-    'com.netflix.nebula:gradle-info-plugin:1.9.5',
-    'org.eclipse.jgit:org.eclipse.jgit:3.7.1.201504261725-r',
-  )
-
   configurations {
     //conflicts with localGroovy()
     testCompile.exclude module: 'groovy-all'
@@ -35,9 +29,9 @@ dependencies {
 
   //Allow testing of optional plugin configuration
   testCompile (
-    'com.gradle.publish:plugin-publish-plugin:0.9.0',
-    'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2',
-    'com.netflix.nebula:nebula-test:2.2.1',
+    'com.gradle.publish:plugin-publish-plugin:0.9.1',
+    'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.3.1',
+    'com.netflix.nebula:nebula-test:3.0.0',
     'org.jfrog.buildinfo:build-info-extractor-gradle:3.1.1',
   )
 }
@@ -106,4 +100,4 @@ tasks.withType(Test) { testTask ->
 tasks.ci.dependsOn tasks.coveralls
 artifactoryPublish.onlyIf { ! buildEnv.release }
 
-wrapper.gradleVersion = '2.5'
+wrapper.gradleVersion = '2.6'

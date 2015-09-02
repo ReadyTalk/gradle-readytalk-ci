@@ -1,7 +1,11 @@
 #*Changelog*
-  * *0.6.0 - 1.0.0* [planned]
-    - Use gradle-extended-info plugin for CI metadata
-    - explicit drone.io support
+* 0.6.x
+    - Use gradle-extended-info plugin for basic CI metadata
+      This gives automatic basic support for many CI systems
+    - Now requires Java 7
+      Virtually unavoidable at this point unless we get rid of nebula-info
+      entirely, and projects really shouldn't be using Java 6 for builds
+    - Updated plugins and libraries, including JGit 3.x -> 4.x
 
 * 0.5.3
     - Enable plugins to be applied even without a .git directory

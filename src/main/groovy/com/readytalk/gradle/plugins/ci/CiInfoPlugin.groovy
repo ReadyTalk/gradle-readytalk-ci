@@ -1,14 +1,12 @@
 package com.readytalk.gradle.plugins.ci
 
+import com.fizzpod.gradle.plugins.info.InfoPlugin
+import com.fizzpod.gradle.plugins.info.ci.TravisProvider
 import com.readytalk.gradle.util.PluginUtils
 import com.readytalk.gradle.util.StringUtils
 import nebula.plugin.info.InfoBrokerPlugin
-import nebula.plugin.info.basic.BasicInfoPlugin
-import nebula.plugin.info.java.InfoJavaPlugin
-import nebula.plugin.info.reporting.InfoJarManifestPlugin
-import nebula.plugin.info.reporting.InfoJarPropertiesFilePlugin
-import nebula.plugin.info.reporting.InfoPropertiesFilePlugin
-import nebula.plugin.info.scm.ScmInfoPlugin
+import nebula.plugin.info.ci.ContinuousIntegrationInfoProvider
+import nebula.plugin.info.ci.JenkinsProvider
 import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.lib.RepositoryBuilder
 import org.gradle.api.Plugin
@@ -35,7 +33,6 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
 
     applyNebulaInfoPlugins()
     addCiInfoExtension()
-    setDefaults()
     populateCiInfo(System.getenv())
     mapInfoBrokerFields()
     configureIvyPublish()
@@ -43,25 +40,15 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
   }
 
   private void applyNebulaInfoPlugins() {
-    project.plugins.with {
-      //Enables a multitude of reporting plugins, safe to always enable
-      //Applied piecemeal because the CI collector plugin is too simple
-      apply(InfoBrokerPlugin)
-      apply(BasicInfoPlugin)
-      apply(ScmInfoPlugin)
-      apply(InfoJavaPlugin)
-      apply(InfoPropertiesFilePlugin)
-      apply(InfoJarPropertiesFilePlugin)
-      apply(InfoJarManifestPlugin)
-    }
+    //com.fizzpod.gradle.plugins.info.InfoPlugin
+    project.plugins.apply(InfoPlugin)
   }
 
   private void addCiInfoExtension() {
     project.extensions.add(EXTENSION_NAME, this.extension)
   }
 
-  private void setDefaults() {
-    extension.buildNumber = project.plugins.findPlugin('info-ci')?.extension?.buildNumber ?: 'local'
+  private void setDefaults(Map env) {
     extension.branch = gitRepo?.branch ?: ''
     extension.masterBranch { isMaster(branch) }
     extension.releaseBranch { isReleaseBranch(branch) }
@@ -93,12 +80,21 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
   }
 
   private void populateCiInfo(Map env) {
-    if (env.'TRAVIS') {
-      populateTravisInfo(env)
+    setDefaults(env)
+
+    ContinuousIntegrationInfoProvider ci =
+            project.plugins.findPlugin('com.fizzpod.info-ci')?.selectedProvider
+
+    switch (ci) {
+      case TravisProvider:
+        populateTravisInfo(env)
+        break
+      case JenkinsProvider:
+        populateJenkinsInfo(env)
+        break
     }
-    else if (env.'BUILD_NUMBER' && env.'JOB_NAME') {
-      populateJenkinsInfo(env)
-    }
+
+    extension.buildNumber = ci.calculateBuildNumber(project)
 
     // Enable manual override for testing, etc.
     if (env.'CI'?.toBoolean()) {
@@ -117,7 +113,6 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
           setProperty(prop, v)
         }
       }
-      buildNumber = env.'TRAVIS_BUILD_NUMBER'
       branch = env.'TRAVIS_BRANCH'
       ci = true
       masterBranch { isMaster(branch) && travisPullRequest == 'false' }
@@ -127,9 +122,7 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
 
   private void populateJenkinsInfo(Map env) {
     extension.with {
-      buildNumber = env.'BUILD_NUMBER'
       buildHost = env.'HOSTNAME'
-      buildId = env.'BUILD_ID'
       branch = env.'GIT_BRANCH'
       ci = true
       ciProvider = 'jenkins'

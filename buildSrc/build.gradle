@@ -3,14 +3,7 @@ apply from: file('../gradle/repositories.gradle')
 
 apply plugin: 'groovy'
 
-dependencies {
-  compile (
-    localGroovy(),
-    gradleApi(),
-    'com.netflix.nebula:gradle-info-plugin:1.9.5',
-    'org.eclipse.jgit:org.eclipse.jgit:3.7.1.201504261725-r',
-  )
-}
+apply from: file('../gradle/dependencies.gradle')
 
 task copySource(type: Sync) {
   from '../src/main'
