@@ -42,7 +42,7 @@ tasks and also apply the 'base' Gradle plugin:
 
 ```groovy
 plugins {
-  id 'com.readytalk.ci' version '0.5.3'
+  id 'com.readytalk.ci' version '0.6.0'
 }
 ```
 
@@ -54,7 +54,7 @@ For a basic `java` project published to an Artifactory repository Maven-style
 plugins {
   id 'java'
   id 'maven-publish'
-  id 'com.readytalk.ci' version '0.5.3'
+  id 'com.readytalk.ci' version '0.6.0'
   id 'com.jfrog.artifactory' version '3.1.1'
 }
 
@@ -78,8 +78,8 @@ a continuous delivery pipeline):
 plugins {
   id 'java'
   id 'ivy-publish'
-  id 'com.readytalk.ci' version '0.5.3'
-  id 'com.jfrog.artifactory' version '3.1.1'
+  id 'com.readytalk.ci' version '0.6.0'
+  id 'com.jfrog.artifactory' version '3.1.2'
 }
 
 apply plugin: 'com.readytalk.ci.version.buildnumber'
@@ -163,7 +163,7 @@ apply plugin: 'com.readytalk.ci.version.buildnumber'
 ### Notes
 
   * Requires Gradle 2.1 or later
-  * Requires Java 7 as of 0.6.0+
+  * Requires Java 7 as of 0.6.x
   * Build metadata based on nebula.info and gradle-extended-info plugins
     Enhanced with additional metadata from buildEnv
     Additional metadata injected for Jenkins and TravisCI

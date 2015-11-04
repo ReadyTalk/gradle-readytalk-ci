@@ -1,5 +1,5 @@
 #*Changelog*
-* 0.6.x
+* 0.6.0
     - Use gradle-extended-info plugin for basic CI metadata
       This gives automatic basic support for many CI systems
     - Now requires Java 7
