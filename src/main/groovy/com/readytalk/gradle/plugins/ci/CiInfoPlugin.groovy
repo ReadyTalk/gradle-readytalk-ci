@@ -13,6 +13,11 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.ivy.tasks.GenerateIvyDescriptor
 
+/**
+ * TODO: trying to use local git repo to validate branch is fragile and error-prone
+ * What we *really* want to know is why the build was triggered
+ */
+
 class CiInfoPlugin implements Plugin<Project>, PluginUtils {
   static final String EXTENSION_NAME = 'buildEnv'
   Project project
@@ -50,9 +55,11 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
 
   private void setDefaults(Map env) {
     extension.branch = gitRepo?.branch ?: ''
-    extension.masterBranch { isMaster(branch) }
-    extension.releaseBranch { isReleaseBranch(branch) }
-    extension.release { isReleaseTag(branch) }
+    extension.watchProperty('branch') { String branch ->
+      extension.masterBranch = isMaster(branch)
+      extension.releaseBranch = isReleaseBranch(branch)
+      extension.release = isReleaseTag(branch)
+    }
   }
 
   private boolean refResolvesToMaster() {
@@ -115,8 +122,10 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
       }
       branch = env.'TRAVIS_BRANCH'
       ci = true
-      masterBranch { isMaster(branch) && travisPullRequest == 'false' }
-      releaseBranch { isReleaseBranch(branch) && travisPullRequest == 'false' }
+      watchProperty('branch') { String branch ->
+        masterBranch = isMaster(branch) && travisPullRequest == 'false'
+        releaseBranch = isReleaseBranch(branch) && travisPullRequest == 'false'
+      }
     }
   }
 
@@ -132,7 +141,7 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
   private void mapInfoBrokerFields() {
     //Map all info fields into broker plugin
     project.with {
-      plugins.withId('info-broker') { InfoBrokerPlugin broker ->
+      plugins.withId('nebula.info-broker') { InfoBrokerPlugin broker ->
         //Override nebula Build-Number, ours is more thorough
         afterEvaluate {
           def ciProps = (CiInfoExtension.getDeclaredFields().findAll {
@@ -161,7 +170,7 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
           doFirst {
             descriptor.status = extension.buildStatus
             descriptor.branch = extension.branch
-            plugins.withId('info-broker') { InfoBrokerPlugin broker ->
+            plugins.withId('nebula.info-broker') { InfoBrokerPlugin broker ->
               descriptor.extraInfo.add('ci', 'info', broker.buildManifestString())
             }
           }

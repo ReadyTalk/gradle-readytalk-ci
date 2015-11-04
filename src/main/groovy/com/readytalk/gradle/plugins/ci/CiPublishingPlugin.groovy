@@ -208,8 +208,9 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
         tasks.'bintrayUpload'.onlyIf { infoExt.isRelease() }
         publishing {
           publications.all { Publication pub ->
-            //Gradle <= 2.3
-            bintray.publications += pub.name
+            maxGradleVersion('2.3') {
+              bintray.publications += pub.name
+            }
             //Gradle >= 2.4
             modelPublicationWiring(pub, 'bintrayUpload')
           }
@@ -226,12 +227,6 @@ class CiPublishingPlugin implements Plugin<Project>, PluginUtils {
     } else {
       logger.warn "Publication ${pub.getName()} is not an ivy or maven artifact, ignoring request for task dependencies."
       return [] as Set<Task>
-    }
-  }
-
-  private void minGradleVersion(String versionString, Closure config) {
-    if(GradleVersion.current() >= GradleVersion.version(versionString)) {
-      config.call()
     }
   }
 

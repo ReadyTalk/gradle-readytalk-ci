@@ -48,7 +48,7 @@ class CiInfoPluginSpec extends PluginProjectSpec implements TestUtils {
 
     when:
     project.evaluate()
-    def manifestMap = project.plugins.getPlugin('info-broker').buildManifest()
+    def manifestMap = project.plugins.getPlugin('nebula.info-broker').buildManifest()
 
     then:
     project.buildEnv.pigs == 'flying'
@@ -64,7 +64,7 @@ class CiInfoPluginSpec extends PluginProjectSpec implements TestUtils {
 
     when:
     project.evaluate()
-    def manifestMap = project.plugins.getPlugin('info-broker').buildManifest()
+    def manifestMap = project.plugins.getPlugin('nebula.info-broker').buildManifest()
 
     then:
     manifestMap.containsKey('Branch')

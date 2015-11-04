@@ -2,6 +2,7 @@ package com.readytalk.gradle.util
 
 import org.gradle.api.Project
 import org.gradle.api.plugins.UnknownPluginException
+import org.gradle.util.GradleVersion
 
 trait PluginUtils {
   abstract Project getProject()
@@ -65,4 +66,21 @@ trait PluginUtils {
   void withTask(String taskName, Closure action) {
     project.tasks.matching { it.name.equals(taskName) }.all(action)
   }
+
+  /**
+   * Conditionally fence off code by Gradle version
+   */
+  void minGradleVersion(String versionString, Closure config) {
+    if(GradleVersion.version(project.gradle.gradleVersion) >= GradleVersion.version(versionString)) {
+      config.call()
+    }
+  }
+
+  void maxGradleVersion(String versionString, Closure config) {
+    if(GradleVersion.version(project.gradle.gradleVersion) >= GradleVersion.version(versionString)) {
+      config.call()
+    }
+  }
+
+
 }

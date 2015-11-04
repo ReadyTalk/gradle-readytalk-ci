@@ -7,6 +7,6 @@ dependencies {
   )
 
   compile('com.fizzpod:gradle-extended-info-plugin:1.0.2') {
-    //exclude group: 'com.netflix.nebula'
+    exclude group: 'com.netflix.nebula'
   }
 }

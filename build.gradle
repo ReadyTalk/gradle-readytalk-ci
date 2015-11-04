@@ -25,6 +25,7 @@ dependencies {
   configurations {
     //conflicts with localGroovy()
     testCompile.exclude module: 'groovy-all'
+    integTestCompile.exclude module: 'groovy-all'
   }
 
   //Allow testing of optional plugin configuration
