@@ -9,7 +9,12 @@ import org.gradle.api.CircularReferenceException
  * It's more complex though since it can affect project setup and not just metadata
  * TODO: Ideally this could do external dependencies as well, e.g. calculate value on get rather than set
  */
-//TODO: Could this be a trait?
+
+
+//TODO: This is vastly overcomplicated for what its used for - we really only need a simple hook
+//      Also, buildEnv should only be used as metadata
+//      we should use a separate extension for control properties like "release"
+
 class ListenableExtension extends ExpandoExtension {
   static interface PropertyInterceptor {
     def propertyMissing(String key)
