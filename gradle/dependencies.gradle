@@ -2,11 +2,12 @@ dependencies {
   compile (
     gradleApi(),
     localGroovy(),
-    'com.netflix.nebula:gradle-info-plugin:3.0.3',
-    'org.eclipse.jgit:org.eclipse.jgit:4.1.0.201509280440-r',
+    //'com.netflix.nebula:gradle-info-plugin:3.1.0',
+    'com.netflix.nebula:gradle-info-plugin:3.2.0-dev.2.+',
+    'org.eclipse.jgit:org.eclipse.jgit:4.3.1.201605051710-r',
   )
 
-  compile('com.fizzpod:gradle-extended-info-plugin:1.0.2') {
+  compile('com.fizzpod:gradle-extended-info-plugin:3.0.0') {
     exclude group: 'com.netflix.nebula'
   }
 }

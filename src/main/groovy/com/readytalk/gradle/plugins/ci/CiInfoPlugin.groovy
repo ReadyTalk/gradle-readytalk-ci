@@ -152,8 +152,8 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
             [(StringUtils.camelConvert(k, true, '-')): v]
           }
           //Override nebula.info values with ones from this plugin's extension if values exist in both
-          def conflicts = broker.container.findAll { ciProps.containsKey(it.name) }
-          broker.container.removeAll(conflicts)
+          def conflicts = broker.manifestEntries.findAll { ciProps.containsKey(it.name) }
+          broker.manifestEntries.removeAll(conflicts)
           ciProps.each { String key, value ->
             broker.add(key) { value.toString() }
           }

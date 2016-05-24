@@ -1,4 +1,10 @@
 #*Changelog*
+
+* 1.1.x-SNAPSHOT
+    - Update to Gradle 2.14
+    - Update upstream plugins
+    - NOTE: Gradle 2.14 appears to be incompatible with current versions of nebula-info, so this may require a forked version of that plugin
+
 * 1.0.0
     - Use gradle-extended-info plugin for basic CI metadata
       This gives automatic basic support for many CI systems
