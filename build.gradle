@@ -1,4 +1,7 @@
 buildscript {
+  repositories {
+    mavenLocal()
+  }
   apply from: file('gradle/repositories.gradle')
   apply from: file('gradle/credentials.gradle')
 }
