@@ -104,4 +104,4 @@ tasks.withType(Test) { testTask ->
 tasks.ci.dependsOn tasks.coveralls
 artifactoryPublish.onlyIf { ! buildEnv.release }
 
-wrapper.gradleVersion = '2.14-rc-1'
+wrapper.gradleVersion = '2.14'
