@@ -35,8 +35,8 @@ dependencies {
   testCompile (
     'com.gradle.publish:plugin-publish-plugin:0.9.1',
     'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.4',
-    'com.netflix.nebula:nebula-test:4.0.0',
-    'org.jfrog.buildinfo:build-info-extractor-gradle:4.3.0',
+    'com.netflix.nebula:nebula-test:4.2.2',
+    'org.jfrog.buildinfo:build-info-extractor-gradle:4.4.0',
   )
 }
 
@@ -104,4 +104,4 @@ tasks.withType(Test) { testTask ->
 tasks.ci.dependsOn tasks.coveralls
 artifactoryPublish.onlyIf { ! buildEnv.release }
 
-wrapper.gradleVersion = '2.14'
+wrapper.gradleVersion = '2.14.1'
