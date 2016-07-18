@@ -1,6 +1,7 @@
 package com.readytalk.gradle.plugins.ci
 
 import com.fizzpod.gradle.plugins.info.InfoPlugin
+import com.fizzpod.gradle.plugins.info.ci.ContinuousIntegrationInfoProviderResolver
 import com.fizzpod.gradle.plugins.info.ci.TravisProvider
 import com.readytalk.gradle.util.PluginUtils
 import com.readytalk.gradle.util.StringUtils
@@ -62,11 +63,17 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
     }
   }
 
+  //TODO: Allow customizing the trunk branch name
   private boolean refResolvesToMaster() {
     if(gitRepo == null) return false
 
-    def masterRef = (gitRepo.getRef('refs/heads/master') ?:
-            gitRepo.getRef('refs/heads/origin/master'))?.objectId?.name
+    //Default to first declared remote
+    def remotes = gitRepo.getRemoteNames()
+    String remote = remotes.size() >= 1 ? remotes.first() : 'origin'
+
+    def masterRef = ((gitRepo.findRef('refs/heads/master') ?:
+            gitRepo.findRef("refs/heads/${remote}/master")) ?:
+            gitRepo.findRef("refs/remotes/${remote}/master"))?.objectId?.name
     def headRef = gitRepo.resolve('HEAD')?.name
 
     return (masterRef && headRef) && (masterRef == headRef)
@@ -152,8 +159,11 @@ class CiInfoPlugin implements Plugin<Project>, PluginUtils {
             [(StringUtils.camelConvert(k, true, '-')): v]
           }
           //Override nebula.info values with ones from this plugin's extension if values exist in both
-          def conflicts = broker.container.findAll { ciProps.containsKey(it.name) }
-          broker.container.removeAll(conflicts)
+          def conflicts = broker.manifestEntries.findAll { InfoBrokerPlugin.ManifestEntry entry ->
+            ciProps.containsKey(entry.name)
+          }
+          broker.manifestEntries.removeAll(conflicts)
+
           ciProps.each { String key, value ->
             broker.add(key) { value.toString() }
           }
