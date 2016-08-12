@@ -8,4 +8,4 @@ env:
   - secure: Ymo6btWBv5nHJUfUSISofiX6I9EnTRg/wv9Qaf0NGT3gAkoXkbK21/BzsXorUhW3g/rnfV5Lmm5zaPcM/USGX26eFirXM62rqWEqJJL4uQUWiabqUhGX8noBcFV/G5HHIByx5SHQz2gVgrrbDww/itr6MSKCs0lZAa+7+dmkWRE=
   - secure: ka6df2qkWGnLjr8X3eLpLUrnBvxfqM7idYi37qqfwNcNyv/HGXgvYqiBYUIgcB03uhXbbF5IkL1Y8RZ3PGcG0eHZ0gAqaUXbY9JHfmkTfMhBp5V+6Ya72lL7A7X3DlEblKIp4TnGcwkbIBfjWSpf/A4lOEJp8XMoTwbAliE2HAU=
 install: /bin/true
-script: ./gradlew ci
+script: ./gradlew ci --no-daemon
