@@ -9,3 +9,9 @@ env:
   - secure: ka6df2qkWGnLjr8X3eLpLUrnBvxfqM7idYi37qqfwNcNyv/HGXgvYqiBYUIgcB03uhXbbF5IkL1Y8RZ3PGcG0eHZ0gAqaUXbY9JHfmkTfMhBp5V+6Ya72lL7A7X3DlEblKIp4TnGcwkbIBfjWSpf/A4lOEJp8XMoTwbAliE2HAU=
 install: /bin/true
 script: ./gradlew ci --no-daemon
+#Required due to https://github.com/travis-ci/travis-ci/issues/3259
+#TravisCI is defaulting to an extremely outdated JDK otherwise
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
