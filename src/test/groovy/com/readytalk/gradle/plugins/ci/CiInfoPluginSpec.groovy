@@ -73,39 +73,4 @@ class CiInfoPluginSpec extends PluginProjectSpec implements TestUtils {
     manifestMap['Branch'].equals(repo.branch)
   }
 
-  //TODO: No longer possible to test fizzpod's extensions
-  //      Groovy can't override private methods via metaclass AFAICT
-  @Ignore @Unroll
-  def "populates info extension from #envMap"() {
-    given:
-    //Override environment in upstream plugins
-    Closure envOverride = { String key ->
-      envMap.get(key)
-    }
-    AbstractContinuousIntegrationProvider.metaClass.static.getEnvironmentVariable = envOverride
-//    ContinuousIntegrationInfoProviderResolver.DEFAULT_PROVIDERS.each { provider ->
-//      provider.metaClass.static.getEnvironmentVariable = envOverride
-//    }
-
-    def infoPlugin = new CiInfoPlugin()
-    infoPlugin.setExtension(new CiInfoExtension())
-    infoPlugin.gitRepo = repo
-    infoPlugin.setProject(project)
-    infoPlugin.setDefaults()
-
-    when:
-    project.plugins.apply('com.fizzpod.info-ci') //Required to guess ci type
-    infoPlugin.populateCiInfo(envMap)
-
-    then:
-    infoPlugin.extension.ciProvider == ciProvider
-    infoPlugin.extension.branch == branch
-    infoPlugin.extension.buildNumber == buildNumber
-
-    where:
-    envMap     | ciProvider | branch          | buildNumber
-    devEnv     | "none"     | 'master'        | 'LOCAL'
-    jenkinsEnv | "jenkins"  | 'jenkinsMaster' | '1234'
-//    travisEnv  | "travis"   | 'travisMaster'  | '5678'
-  }
 }
