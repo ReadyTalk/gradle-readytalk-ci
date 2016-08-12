@@ -1,6 +1,5 @@
 language: groovy
 jdk: oraclejdk8
-sudo: false
 env:
   global:
   - secure: bRDLHywt6ujV18EyL5F7MaV0p/o9f1YZh2aH63bmlRgssp3zFrnOyokyt5gmPmj5AxuUV3h1D6AN6j9cd3goRfI0jwh6gG+dTP6CN2lWvpsG46Gh9hkC906gb1fvRm/wSYqS3b5lBPgPWLkQLLHIc9t8tX9e74trm3EzB2ePiuE=
@@ -9,9 +8,3 @@ env:
   - secure: ka6df2qkWGnLjr8X3eLpLUrnBvxfqM7idYi37qqfwNcNyv/HGXgvYqiBYUIgcB03uhXbbF5IkL1Y8RZ3PGcG0eHZ0gAqaUXbY9JHfmkTfMhBp5V+6Ya72lL7A7X3DlEblKIp4TnGcwkbIBfjWSpf/A4lOEJp8XMoTwbAliE2HAU=
 install: /bin/true
 script: ./gradlew ci --no-daemon
-#Required due to https://github.com/travis-ci/travis-ci/issues/3259
-#TravisCI is defaulting to an extremely outdated JDK otherwise
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer
