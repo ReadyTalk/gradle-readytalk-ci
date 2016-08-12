@@ -1,8 +1,10 @@
 #*Changelog*
 
-* 1.0.1
-    - Update to Gradle 2.14
+* 1.1.0
+    - Update to Gradle 3.0-rc-2
     - Update JGit version
+    - Update Nebula versions
+    - Experimental support for Jenkins' multibranch pipelines
 
 * 1.0.0
     - Use gradle-extended-info plugin for basic CI metadata
